@@ -109,37 +109,270 @@
       margin-bottom: 6px;
     }
 
-    /* ── Data debug panel (Phase 1 only) ── */
-    .data-summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .data-card {
+    /* ── Filter Bar ── */
+    .filter-bar {
       background: #fff;
       border: 1px solid #d0dce8;
       border-radius: 6px;
-      padding: 16px 20px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
     }
-    .data-card .label {
+    .filter-bar label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #5a7a96;
+      white-space: nowrap;
+    }
+    .filter-bar select {
+      font-size: 13px;
+      color: #2c3e50;
+      background: #f4f6f8;
+      border: 1px solid #c8d8e8;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      outline: none;
+    }
+    .filter-bar select:focus { border-color: #1a6fb4; }
+    .filter-bar .filter-group { display: flex; align-items: center; gap: 6px; }
+    .filter-bar .filter-sep { width: 1px; height: 24px; background: #d0dce8; }
+    .btn-clear {
+      font-size: 12px;
+      color: #1a6fb4;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .btn-clear:hover { background: #e8f0f8; }
+    .filter-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: #8aa0b4;
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: #fff;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .data-table thead {
+      background: #f0f4f8;
+      border-bottom: 2px solid #d0dce8;
+    }
+    .data-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #5a7a96;
+      padding: 10px 14px;
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #eaf0f6;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr { cursor: pointer; transition: background 0.1s; }
+    .data-table tbody tr:hover { background: #f7fafd; }
+    .data-table tbody tr.highlighted { background: #fffbea; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
       font-size: 11px;
       font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+    /* Status */
+    .badge-identified   { background: #e8eef4; color: #4a6a84; }
+    .badge-in-planning  { background: #ddeaf8; color: #1a5f9a; }
+    .badge-active       { background: #d4edda; color: #1a6b35; }
+    .badge-on-hold      { background: #fff3cd; color: #856404; }
+    .badge-completed    { background: #e8e8e8; color: #555; }
+    /* Priority */
+    .badge-high   { background: #fde8e8; color: #922; }
+    .badge-medium { background: #fef3e2; color: #7a4f00; }
+    .badge-low    { background: #e8f5e9; color: #2a6a3a; }
+
+    /* ── Inline status select ── */
+    .status-select {
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 3px 8px;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a7a96'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      padding-right: 20px;
+    }
+    .status-select.s-identified  { background-color: #e8eef4; color: #4a6a84; }
+    .status-select.s-in-planning { background-color: #ddeaf8; color: #1a5f9a; }
+    .status-select.s-active      { background-color: #d4edda; color: #1a6b35; }
+    .status-select.s-on-hold     { background-color: #fff3cd; color: #856404; }
+    .status-select.s-completed   { background-color: #e8e8e8; color: #555; }
+
+    /* ── Linked counts ── */
+    .link-count {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #1a6fb4;
+      background: #e8f0f8;
+      border-radius: 10px;
+      padding: 2px 8px;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .link-count:hover { background: #d0e4f4; }
+    .link-count.zero { color: #aaa; background: #f0f0f0; cursor: default; }
+
+    /* ── Date display ── */
+    .date-not-set { color: #aaa; font-style: italic; }
+
+    /* ── Empty state ── */
+    .table-empty {
+      text-align: center;
+      padding: 48px 24px;
+      color: #8aa0b4;
+      font-size: 13px;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 25, 45, 0.45);
+      z-index: 1000;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      overflow: hidden;
+      margin: auto;
+    }
+    .modal-header {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 18px 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 600; line-height: 1.3; }
+    .modal-close {
+      background: none;
+      border: none;
+      color: #a8c4e0;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .modal-close:hover { color: #fff; }
+    .modal-body { padding: 24px; }
+    .modal-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .modal-field { display: flex; flex-direction: column; gap: 4px; }
+    .modal-field label {
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #8aa0b4;
-      margin-bottom: 4px;
     }
-    .data-card .value {
-      font-size: 28px;
-      font-weight: 700;
-      color: #1a3a5c;
+    .modal-field span { font-size: 13px; color: #2c3e50; }
+    .modal-desc {
+      font-size: 13px;
+      color: #4a6a84;
+      line-height: 1.6;
+      background: #f7fafd;
+      border: 1px solid #e0eaf4;
+      border-radius: 4px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
     }
-    .data-card .sub {
+    .modal-section-title {
       font-size: 12px;
-      color: #8aa0b4;
-      margin-top: 2px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #5a7a96;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e0eaf4;
     }
+    .modal-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .modal-link-chip {
+      font-size: 12px;
+      background: #e8f0f8;
+      color: #1a5f9a;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+      border: 1px solid #c8daea;
+    }
+    .modal-link-chip:hover { background: #d0e4f4; }
+    .modal-none { font-size: 13px; color: #aaa; font-style: italic; }
+    .modal-footer {
+      padding: 14px 24px;
+      border-top: 1px solid #e0eaf4;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .btn-secondary {
+      font-size: 13px;
+      padding: 8px 18px;
+      border: 1px solid #c8d8e8;
+      border-radius: 4px;
+      background: #fff;
+      color: #2c3e50;
+      cursor: pointer;
+    }
+    .btn-secondary:hover { background: #f4f6f8; }
   </style>
 </head>
 <body>
@@ -168,13 +401,85 @@
       <h2>Opportunity Registry</h2>
       <p>All annual planning Opportunities across Ontario I&amp;IT clusters.</p>
     </div>
-    <div id="opp-data-summary" class="data-summary"></div>
-    <div class="placeholder-box">
-      <div class="icon">📋</div>
-      <h3>Opportunity Registry — Coming in Phase 2</h3>
-      <p>Navigation and data verified. Full table view builds next.</p>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="opp-filter-cluster">Cluster</label>
+        <select id="opp-filter-cluster">
+          <option value="">All Clusters</option>
+        </select>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group">
+        <label for="opp-filter-status">Status</label>
+        <select id="opp-filter-status">
+          <option value="">All Statuses</option>
+          <option>Identified</option>
+          <option>In Planning</option>
+          <option>Active</option>
+          <option>On Hold</option>
+          <option>Completed</option>
+        </select>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group">
+        <label for="opp-filter-priority">Priority</label>
+        <select id="opp-filter-priority">
+          <option value="">All Priorities</option>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+      <button class="btn-clear" id="opp-clear-filters">Clear filters</button>
+      <span class="filter-count" id="opp-filter-count"></span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="data-table" id="opp-table">
+        <thead>
+          <tr>
+            <th>Opportunity Name</th>
+            <th>Cluster</th>
+            <th>Ministry</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Planned Start</th>
+            <th>Last Updated</th>
+            <th>Infra Requests</th>
+            <th>Projects</th>
+            <th>Solutions / CIs</th>
+          </tr>
+        </thead>
+        <tbody id="opp-tbody"></tbody>
+      </table>
     </div>
   </section>
+
+  <!-- Opportunity Detail Modal -->
+  <div class="modal-overlay" id="opp-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-opp-name"></h3>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-meta" id="modal-opp-meta"></div>
+        <div class="modal-desc" id="modal-opp-desc"></div>
+        <div class="modal-section-title">Linked Infrastructure Requests</div>
+        <div class="modal-links" id="modal-opp-ir"></div>
+        <div class="modal-section-title">Linked Projects</div>
+        <div class="modal-links" id="modal-opp-proj"></div>
+        <div class="modal-section-title">Linked Solutions / CIs</div>
+        <div class="modal-links" id="modal-opp-ci"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modal-close-btn2">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- View 2: Infrastructure Requests -->
   <section id="view-infra" class="view">
@@ -348,44 +653,230 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 });
 
 // ════════════════════════════════════════════════════════════
-//  PHASE 1 — DATA VERIFICATION SUMMARY
+//  HELPERS
 // ════════════════════════════════════════════════════════════
 
-function renderDataSummary() {
-  const el = document.getElementById('opp-data-summary');
-  if (!el) return;
+const TODAY = '2026-03-27';
 
-  const unlinkedIR    = infrastructureRequests.filter(r => r.opportunityId === null).length;
-  const unlinkedProj  = projects.filter(p => p.opportunityId === null).length;
-  const today         = new Date('2026-03-27');
-  const overdue       = opportunities.filter(o =>
-    o.plannedStartDate &&
-    new Date(o.plannedStartDate) < today &&
-    (o.status === 'Identified' || o.status === 'In Planning')
-  ).length;
-  const missingDate   = opportunities.filter(o => !o.plannedStartDate).length;
-
-  const cards = [
-    { label: 'Clusters',                value: clusters.length,                sub: 'Ontario I&IT' },
-    { label: 'Opportunities',           value: opportunities.length,           sub: 'across all clusters' },
-    { label: 'Infrastructure Requests', value: infrastructureRequests.length,  sub: `${unlinkedIR} unlinked` },
-    { label: 'Projects',                value: projects.length,                sub: `${unlinkedProj} unlinked` },
-    { label: 'Configuration Items',     value: configurationItems.length,      sub: 'from CMDB' },
-    { label: 'CI Links',                value: opportunityCIs.length,          sub: 'many-to-many' },
-    { label: 'Overdue to Start',        value: overdue,                        sub: 'need attention' },
-    { label: 'Missing Start Date',      value: missingDate,                    sub: 'incomplete planning' }
-  ];
-
-  el.innerHTML = cards.map(c => `
-    <div class="data-card">
-      <div class="label">${c.label}</div>
-      <div class="value">${c.value}</div>
-      <div class="sub">${c.sub}</div>
-    </div>
-  `).join('');
+function fmtDate(d) {
+  if (!d) return '<span class="date-not-set">Not set</span>';
+  const [y, m, day] = d.split('-');
+  return `${day}/${m}/${y}`;
 }
 
-renderDataSummary();
+function statusClass(s) {
+  return 's-' + s.toLowerCase().replace(/\s+/g, '-');
+}
+function statusBadgeClass(s) {
+  return 'badge badge-' + s.toLowerCase().replace(/\s+/g, '-');
+}
+function priorityBadgeClass(p) {
+  return 'badge badge-' + p.toLowerCase();
+}
+
+function irCountForOpp(oppId)   { return infrastructureRequests.filter(r => r.opportunityId === oppId).length; }
+function projCountForOpp(oppId) { return projects.filter(p => p.opportunityId === oppId).length; }
+function ciCountForOpp(oppId)   { return opportunityCIs.filter(x => x.opportunityId === oppId).length; }
+
+function clusterById(id) { return clusters.find(c => c.id === id) || {}; }
+
+// ════════════════════════════════════════════════════════════
+//  VIEW 1 — OPPORTUNITY REGISTRY
+// ════════════════════════════════════════════════════════════
+
+// Populate cluster filter
+(function populateClusterFilter() {
+  const sel = document.getElementById('opp-filter-cluster');
+  clusters.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+})();
+
+function getOppFilters() {
+  return {
+    cluster:  document.getElementById('opp-filter-cluster').value,
+    status:   document.getElementById('opp-filter-status').value,
+    priority: document.getElementById('opp-filter-priority').value,
+  };
+}
+
+function renderOppTable() {
+  const { cluster, status, priority } = getOppFilters();
+  let filtered = opportunities.filter(o => {
+    if (cluster  && o.clusterId !== parseInt(cluster)) return false;
+    if (status   && o.status !== status)               return false;
+    if (priority && o.priority !== priority)           return false;
+    return true;
+  });
+
+  const countEl = document.getElementById('opp-filter-count');
+  countEl.textContent = filtered.length === opportunities.length
+    ? `${opportunities.length} opportunities`
+    : `${filtered.length} of ${opportunities.length} opportunities`;
+
+  const tbody = document.getElementById('opp-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="table-empty">No opportunities match the current filters.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(o => {
+    const cl      = clusterById(o.clusterId);
+    const irCount = irCountForOpp(o.id);
+    const prCount = projCountForOpp(o.id);
+    const ciCount = ciCountForOpp(o.id);
+
+    const irChip = `<span class="link-count${irCount === 0 ? ' zero' : ''}" data-nav-ir="${o.id}">${irCount}</span>`;
+    const prChip = `<span class="link-count${prCount === 0 ? ' zero' : ''}" data-nav-proj="${o.id}">${prCount}</span>`;
+    const ciChip = `<span class="link-count${ciCount === 0 ? ' zero' : ''}" data-nav-ci="${o.id}">${ciCount}</span>`;
+
+    return `<tr data-opp-id="${o.id}">
+      <td><strong>${o.name}</strong></td>
+      <td style="max-width:200px;white-space:normal">${cl.name || ''}</td>
+      <td style="max-width:180px;white-space:normal;font-size:12px;color:#6b8299">${cl.ministry || ''}</td>
+      <td><span class="${priorityBadgeClass(o.priority)}">${o.priority}</span></td>
+      <td><select class="status-select ${statusClass(o.status)}" data-opp-id="${o.id}" onclick="event.stopPropagation()">
+        <option${o.status==='Identified'  ? ' selected':''}>Identified</option>
+        <option${o.status==='In Planning' ? ' selected':''}>In Planning</option>
+        <option${o.status==='Active'      ? ' selected':''}>Active</option>
+        <option${o.status==='On Hold'     ? ' selected':''}>On Hold</option>
+        <option${o.status==='Completed'   ? ' selected':''}>Completed</option>
+      </select></td>
+      <td>${fmtDate(o.plannedStartDate)}</td>
+      <td>${fmtDate(o.lastUpdated)}</td>
+      <td>${irChip}</td>
+      <td>${prChip}</td>
+      <td>${ciChip}</td>
+    </tr>`;
+  }).join('');
+
+  // Row click → detail modal
+  tbody.querySelectorAll('tr[data-opp-id]').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target.classList.contains('status-select')) return;
+      if (e.target.dataset.navIr || e.target.dataset.navProj || e.target.dataset.navCi) return;
+      openOppModal(parseInt(row.dataset.oppId));
+    });
+  });
+
+  // Inline status change
+  tbody.querySelectorAll('.status-select').forEach(sel => {
+    sel.addEventListener('change', (e) => {
+      const oppId = parseInt(e.target.dataset.oppId);
+      const opp   = opportunities.find(o => o.id === oppId);
+      if (!opp) return;
+      opp.status      = e.target.value;
+      opp.lastUpdated = TODAY;
+      // Re-apply style class
+      e.target.className = `status-select ${statusClass(opp.status)}`;
+      // Update last updated cell (3 cols to the right: td index 6)
+      const cells = e.target.closest('tr').querySelectorAll('td');
+      cells[6].innerHTML = fmtDate(TODAY);
+    });
+  });
+
+  // Linked count chips → cross-view navigation (wired in Phase 6; stub click suppression here)
+  tbody.querySelectorAll('[data-nav-ir]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      if (parseInt(el.dataset.navIr) && irCountForOpp(parseInt(el.closest('tr').dataset.oppId)) > 0) {
+        navigateTo('view-infra', { opportunityId: parseInt(el.closest('tr').dataset.oppId) });
+      }
+    });
+  });
+  tbody.querySelectorAll('[data-nav-proj]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      if (projCountForOpp(parseInt(el.closest('tr').dataset.oppId)) > 0) {
+        navigateTo('view-projects', { opportunityId: parseInt(el.closest('tr').dataset.oppId) });
+      }
+    });
+  });
+  tbody.querySelectorAll('[data-nav-ci]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      if (ciCountForOpp(parseInt(el.closest('tr').dataset.oppId)) > 0) {
+        navigateTo('view-solutions', { opportunityId: parseInt(el.closest('tr').dataset.oppId) });
+      }
+    });
+  });
+}
+
+// Filters
+['opp-filter-cluster','opp-filter-status','opp-filter-priority'].forEach(id => {
+  document.getElementById(id).addEventListener('change', renderOppTable);
+});
+document.getElementById('opp-clear-filters').addEventListener('click', () => {
+  document.getElementById('opp-filter-cluster').value  = '';
+  document.getElementById('opp-filter-status').value   = '';
+  document.getElementById('opp-filter-priority').value = '';
+  renderOppTable();
+});
+
+// ── Opportunity Detail Modal ──────────────────────────────
+
+function openOppModal(oppId) {
+  const o  = opportunities.find(x => x.id === oppId);
+  if (!o) return;
+  const cl = clusterById(o.clusterId);
+
+  document.getElementById('modal-opp-name').textContent = o.name;
+  document.getElementById('modal-opp-desc').textContent = o.description;
+
+  document.getElementById('modal-opp-meta').innerHTML = `
+    <div class="modal-field"><label>Cluster</label><span>${cl.name || '—'}</span></div>
+    <div class="modal-field"><label>Ministry</label><span>${cl.ministry || '—'}</span></div>
+    <div class="modal-field"><label>Priority</label><span><span class="${priorityBadgeClass(o.priority)}">${o.priority}</span></span></div>
+    <div class="modal-field"><label>Status</label><span><span class="${statusBadgeClass(o.status)}">${o.status}</span></span></div>
+    <div class="modal-field"><label>Planned Start</label><span>${o.plannedStartDate ? fmtDate(o.plannedStartDate) : '<em style="color:#aaa">Not set</em>'}</span></div>
+    <div class="modal-field"><label>Last Updated</label><span>${fmtDate(o.lastUpdated)}</span></div>
+  `;
+
+  const irLinks = infrastructureRequests.filter(r => r.opportunityId === oppId);
+  document.getElementById('modal-opp-ir').innerHTML = irLinks.length
+    ? irLinks.map(r => `<span class="modal-link-chip" data-nav-ir-modal="${oppId}">${r.externalRequestId} — ${r.name}</span>`).join('')
+    : '<span class="modal-none">No linked infrastructure requests</span>';
+
+  const projLinks = projects.filter(p => p.opportunityId === oppId);
+  document.getElementById('modal-opp-proj').innerHTML = projLinks.length
+    ? projLinks.map(p => `<span class="modal-link-chip" data-nav-proj-modal="${oppId}">${p.externalProjectId} — ${p.name}</span>`).join('')
+    : '<span class="modal-none">No linked projects</span>';
+
+  const ciLinks = opportunityCIs.filter(x => x.opportunityId === oppId)
+    .map(x => configurationItems.find(ci => ci.id === x.ciId)).filter(Boolean);
+  document.getElementById('modal-opp-ci').innerHTML = ciLinks.length
+    ? ciLinks.map(ci => `<span class="modal-link-chip" data-nav-ci-modal="${oppId}">${ci.ciName}</span>`).join('')
+    : '<span class="modal-none">No linked CIs</span>';
+
+  // Modal chip clicks → navigate
+  document.querySelectorAll('[data-nav-ir-modal]').forEach(el => {
+    el.addEventListener('click', () => { closeOppModal(); navigateTo('view-infra', { opportunityId: oppId }); });
+  });
+  document.querySelectorAll('[data-nav-proj-modal]').forEach(el => {
+    el.addEventListener('click', () => { closeOppModal(); navigateTo('view-projects', { opportunityId: oppId }); });
+  });
+  document.querySelectorAll('[data-nav-ci-modal]').forEach(el => {
+    el.addEventListener('click', () => { closeOppModal(); navigateTo('view-solutions', { opportunityId: oppId }); });
+  });
+
+  document.getElementById('opp-modal').classList.add('open');
+}
+
+function closeOppModal() {
+  document.getElementById('opp-modal').classList.remove('open');
+}
+
+document.getElementById('modal-close-btn').addEventListener('click',  closeOppModal);
+document.getElementById('modal-close-btn2').addEventListener('click', closeOppModal);
+document.getElementById('opp-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('opp-modal')) closeOppModal();
+});
+
+// Initial render
+renderOppTable();
 </script>
 </body>
 </html>
