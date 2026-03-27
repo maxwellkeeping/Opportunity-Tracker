@@ -468,6 +468,70 @@
       font-size: 13px;
     }
     .opp-link:hover { text-decoration: underline; }
+
+    /* ── CI search / link (in Opp modal) ── */
+    .ci-link-row { position: relative; margin-top: 4px; }
+    .ci-search-input {
+      width: 100%;
+      font-size: 13px;
+      color: #2c3e50;
+      background: #f7fafd;
+      border: 1px solid #c8d8e8;
+      border-radius: 4px;
+      padding: 8px 10px;
+      outline: none;
+      font-family: inherit;
+    }
+    .ci-search-input:focus { border-color: #1a6fb4; background: #fff; }
+    .ci-search-results {
+      display: none;
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 0; right: 0;
+      background: #fff;
+      border: 1px solid #c8d8e8;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 2000;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .ci-search-results.open { display: block; }
+    .ci-result-item {
+      padding: 8px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      border-bottom: 1px solid #eaf0f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ci-result-item:last-child { border-bottom: none; }
+    .ci-result-item:hover { background: #f0f6fc; }
+    .ci-result-item.already-linked { color: #aaa; cursor: default; }
+    .ci-result-item.already-linked:hover { background: #fff; }
+    .ci-result-badge {
+      font-size: 11px;
+      color: #8aa0b4;
+      background: #eef2f6;
+      border-radius: 3px;
+      padding: 1px 6px;
+    }
+    .ci-remove {
+      font-size: 11px;
+      color: #922;
+      cursor: pointer;
+      margin-left: 6px;
+      font-weight: 700;
+    }
+    .ci-remove:hover { color: #c00; }
+
+    /* ── Environment / hosting badges ── */
+    .badge-prod     { background: #d4edda; color: #1a6b35; }
+    .badge-non-prod { background: #fff3cd; color: #856404; }
+    .badge-on-prem  { background: #e8eef4; color: #4a6a84; }
+    .badge-cloud    { background: #ddeaf8; color: #1a5f9a; }
+    .badge-hybrid   { background: #e8f0e8; color: #2a5a2a; }
   </style>
 </head>
 <body>
@@ -569,6 +633,10 @@
         <div class="modal-links" id="modal-opp-proj"></div>
         <div class="modal-section-title">Linked Solutions / CIs</div>
         <div class="modal-links" id="modal-opp-ci"></div>
+        <div class="ci-link-row">
+          <input type="text" id="ci-search-input" class="ci-search-input" placeholder="Search CI by name or ID to link…" autocomplete="off">
+          <div id="ci-search-results" class="ci-search-results"></div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn-secondary" id="modal-close-btn2">Close</button>
@@ -834,17 +902,78 @@
     </div>
   </div>
 
-  <!-- View 4: Solutions -->
+  <!-- View 4: Solutions (CMDB) -->
   <section id="view-solutions" class="view">
     <div class="view-header">
       <h2>Solutions (CMDB)</h2>
       <p>Configuration Items sourced from CMDB, linked to Opportunities.</p>
     </div>
-    <div class="placeholder-box">
-      <div class="icon">⚙️</div>
-      <h3>Solutions (CMDB) — Coming in Phase 4</h3>
+    <div class="info-banner">
+      Solution data sourced from CMDB via API. Showing CIs linked to at least one Opportunity.
+    </div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="ci-filter-cluster">Owning Cluster</label>
+        <select id="ci-filter-cluster">
+          <option value="">All Clusters</option>
+        </select>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group">
+        <label for="ci-filter-env">Environment</label>
+        <select id="ci-filter-env">
+          <option value="">All</option>
+          <option>Prod</option>
+          <option>Non-Prod</option>
+        </select>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group">
+        <label for="ci-filter-hosting">Hosting Type</label>
+        <select id="ci-filter-hosting">
+          <option value="">All</option>
+          <option>On-prem</option>
+          <option>Cloud</option>
+          <option>Hybrid</option>
+        </select>
+      </div>
+      <button class="btn-clear" id="ci-clear-filters">Clear filters</button>
+      <span class="filter-count" id="ci-filter-count"></span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>CI Name</th>
+            <th>Owning Cluster</th>
+            <th>Environment</th>
+            <th>Hosting Type</th>
+            <th>Linked Opportunities</th>
+          </tr>
+        </thead>
+        <tbody id="ci-tbody"></tbody>
+      </table>
     </div>
   </section>
+
+  <!-- CI Detail Modal -->
+  <div class="modal-overlay" id="ci-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-ci-name"></h3>
+        <button class="modal-close" id="ci-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-meta" id="modal-ci-meta"></div>
+        <div class="modal-desc" id="modal-ci-desc"></div>
+        <div class="modal-section-title">Linked Opportunities</div>
+        <div class="modal-links" id="modal-ci-opps"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="ci-modal-close2">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- View 5: Leadership Dashboard -->
   <section id="view-dashboard" class="view">
@@ -1532,6 +1661,250 @@ document.getElementById('proj-add-save').addEventListener('click', () => {
 });
 
 renderProjTable();
+
+// ════════════════════════════════════════════════════════════
+//  VIEW 4 — SOLUTIONS (CMDB)
+// ════════════════════════════════════════════════════════════
+
+function envBadgeClass(e) {
+  return e === 'Prod' ? 'badge badge-prod' : 'badge badge-non-prod';
+}
+function hostBadgeClass(h) {
+  const map = { 'On-prem': 'badge badge-on-prem', 'Cloud': 'badge badge-cloud', 'Hybrid': 'badge badge-hybrid' };
+  return map[h] || 'badge';
+}
+
+// Populate cluster filter for Solutions view
+(function populateCIClusterFilter() {
+  const sel = document.getElementById('ci-filter-cluster');
+  clusters.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+})();
+
+function renderCITable() {
+  const clusterFilter = document.getElementById('ci-filter-cluster').value;
+  const envFilter     = document.getElementById('ci-filter-env').value;
+  const hostFilter    = document.getElementById('ci-filter-hosting').value;
+
+  // Only show CIs linked to at least one Opportunity
+  const linkedCIIds = new Set(opportunityCIs.map(x => x.ciId));
+  let filtered = configurationItems.filter(ci => {
+    if (!linkedCIIds.has(ci.id))                               return false;
+    if (clusterFilter && ci.owningCluster !== clusterFilter)   return false;
+    if (envFilter     && ci.environment   !== envFilter)       return false;
+    if (hostFilter    && ci.hostingType   !== hostFilter)      return false;
+    return true;
+  });
+
+  const total = configurationItems.filter(ci => linkedCIIds.has(ci.id)).length;
+  document.getElementById('ci-filter-count').textContent =
+    filtered.length === total
+      ? `${total} CIs`
+      : `${filtered.length} of ${total} CIs`;
+
+  const tbody = document.getElementById('ci-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="table-empty">No CIs match the current filters.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(ci => {
+    const oppCount = opportunityCIs.filter(x => x.ciId === ci.id).length;
+    return `<tr data-ci-id="${ci.id}" style="cursor:pointer">
+      <td><strong>${ci.ciName}</strong></td>
+      <td style="font-size:12px;color:#6b8299">${ci.owningCluster}</td>
+      <td><span class="${envBadgeClass(ci.environment)}">${ci.environment}</span></td>
+      <td><span class="${hostBadgeClass(ci.hostingType)}">${ci.hostingType}</span></td>
+      <td><span class="link-count" data-nav-opp-ci="${ci.id}">${oppCount} opportunit${oppCount === 1 ? 'y' : 'ies'}</span></td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('tr[data-ci-id]').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.dataset.navOppCi) return;
+      openCIModal(parseInt(row.dataset.ciId));
+    });
+  });
+
+  tbody.querySelectorAll('[data-nav-opp-ci]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      navigateTo('view-opportunities', { filterByCiId: parseInt(el.dataset.navOppCi) });
+    });
+  });
+}
+
+function openCIModal(ciId) {
+  const ci = configurationItems.find(x => x.id === ciId);
+  if (!ci) return;
+
+  document.getElementById('modal-ci-name').textContent = ci.ciName;
+  document.getElementById('modal-ci-desc').textContent = ci.description || '—';
+  document.getElementById('modal-ci-meta').innerHTML = `
+    <div class="modal-field"><label>Owning Cluster</label><span>${ci.owningCluster}</span></div>
+    <div class="modal-field"><label>Environment</label><span><span class="${envBadgeClass(ci.environment)}">${ci.environment}</span></span></div>
+    <div class="modal-field"><label>Hosting Type</label><span><span class="${hostBadgeClass(ci.hostingType)}">${ci.hostingType}</span></span></div>
+  `;
+
+  const linkedOpps = opportunityCIs.filter(x => x.ciId === ciId)
+    .map(x => opportunities.find(o => o.id === x.opportunityId)).filter(Boolean);
+
+  document.getElementById('modal-ci-opps').innerHTML = linkedOpps.length
+    ? linkedOpps.map(o => `<span class="modal-link-chip" data-nav-opp-from-ci="${o.id}">${o.name}</span>`).join('')
+    : '<span class="modal-none">No linked Opportunities</span>';
+
+  document.querySelectorAll('[data-nav-opp-from-ci]').forEach(el => {
+    el.addEventListener('click', () => {
+      closeCIModal();
+      navigateTo('view-opportunities', { highlightOppId: parseInt(el.dataset.navOppFromCi) });
+    });
+  });
+
+  document.getElementById('ci-modal').classList.add('open');
+}
+
+function closeCIModal() {
+  document.getElementById('ci-modal').classList.remove('open');
+}
+['ci-modal-close','ci-modal-close2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', closeCIModal);
+});
+document.getElementById('ci-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('ci-modal')) closeCIModal();
+});
+
+document.getElementById('ci-filter-cluster').addEventListener('change', renderCITable);
+document.getElementById('ci-filter-env').addEventListener('change', renderCITable);
+document.getElementById('ci-filter-hosting').addEventListener('change', renderCITable);
+document.getElementById('ci-clear-filters').addEventListener('click', () => {
+  document.getElementById('ci-filter-cluster').value = '';
+  document.getElementById('ci-filter-env').value     = '';
+  document.getElementById('ci-filter-hosting').value = '';
+  renderCITable();
+});
+
+// ── CI Search & Link from Opportunity Modal ───────────────
+
+let _currentModalOppId = null;
+
+function _patchCIChips(oppId) {
+  const ciLinks = opportunityCIs.filter(x => x.opportunityId === oppId)
+    .map(x => configurationItems.find(ci => ci.id === x.ciId)).filter(Boolean);
+  const container = document.getElementById('modal-opp-ci');
+  if (!container) return;
+  container.innerHTML = ciLinks.length
+    ? ciLinks.map(ci => `
+        <span class="modal-link-chip">
+          ${ci.ciName}
+          <span class="ci-remove" data-remove-ci="${ci.id}" data-remove-opp="${oppId}" title="Unlink">&times;</span>
+        </span>`).join('')
+    : '<span class="modal-none">No linked CIs</span>';
+
+  container.querySelectorAll('[data-remove-ci]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const ciId = parseInt(btn.dataset.removeCi);
+      const oId  = parseInt(btn.dataset.removeOpp);
+      const idx  = opportunityCIs.findIndex(x => x.opportunityId === oId && x.ciId === ciId);
+      if (idx !== -1) opportunityCIs.splice(idx, 1);
+      openOppModal(oId);
+      renderCITable();
+      renderOppTable();
+    });
+  });
+}
+
+// Replace openOppModal with full version including CI linking
+openOppModal = function(oppId) {
+  _currentModalOppId = oppId;
+  const o  = opportunities.find(x => x.id === oppId);
+  if (!o) return;
+  const cl = clusterById(o.clusterId);
+
+  document.getElementById('modal-opp-name').textContent = o.name;
+  document.getElementById('modal-opp-desc').textContent = o.description;
+  document.getElementById('modal-opp-meta').innerHTML = `
+    <div class="modal-field"><label>Cluster</label><span>${cl.name || '—'}</span></div>
+    <div class="modal-field"><label>Ministry</label><span>${cl.ministry || '—'}</span></div>
+    <div class="modal-field"><label>Priority</label><span><span class="${priorityBadgeClass(o.priority)}">${o.priority}</span></span></div>
+    <div class="modal-field"><label>Status</label><span><span class="${statusBadgeClass(o.status)}">${o.status}</span></span></div>
+    <div class="modal-field"><label>Planned Start</label><span>${o.plannedStartDate ? fmtDate(o.plannedStartDate) : '<em style="color:#aaa">Not set</em>'}</span></div>
+    <div class="modal-field"><label>Last Updated</label><span>${fmtDate(o.lastUpdated)}</span></div>
+  `;
+
+  const irLinks = infrastructureRequests.filter(r => r.opportunityId === oppId);
+  document.getElementById('modal-opp-ir').innerHTML = irLinks.length
+    ? irLinks.map(r => `<span class="modal-link-chip" data-nav-ir-modal="${oppId}">${r.externalRequestId} — ${r.name}</span>`).join('')
+    : '<span class="modal-none">No linked infrastructure requests</span>';
+
+  const projLinks = projects.filter(p => p.opportunityId === oppId);
+  document.getElementById('modal-opp-proj').innerHTML = projLinks.length
+    ? projLinks.map(p => `<span class="modal-link-chip" data-nav-proj-modal="${oppId}">${p.externalProjectId} — ${p.name}</span>`).join('')
+    : '<span class="modal-none">No linked projects</span>';
+
+  _patchCIChips(oppId);
+
+  document.querySelectorAll('[data-nav-ir-modal]').forEach(el => {
+    el.addEventListener('click', () => { closeOppModal(); navigateTo('view-infra',    { opportunityId: oppId }); });
+  });
+  document.querySelectorAll('[data-nav-proj-modal]').forEach(el => {
+    el.addEventListener('click', () => { closeOppModal(); navigateTo('view-projects', { opportunityId: oppId }); });
+  });
+
+  document.getElementById('ci-search-input').value = '';
+  document.getElementById('ci-search-results').classList.remove('open');
+  document.getElementById('opp-modal').classList.add('open');
+};
+
+document.getElementById('ci-search-input').addEventListener('input', function() {
+  const q       = this.value.trim().toLowerCase();
+  const results = document.getElementById('ci-search-results');
+  if (!q) { results.classList.remove('open'); return; }
+
+  const already = new Set(opportunityCIs
+    .filter(x => x.opportunityId === _currentModalOppId)
+    .map(x => x.ciId));
+
+  const matches = configurationItems.filter(ci =>
+    ci.ciName.toLowerCase().includes(q) || String(ci.id).includes(q)
+  );
+
+  results.innerHTML = matches.length === 0
+    ? `<div class="ci-result-item" style="color:#aaa;cursor:default">No CIs found</div>`
+    : matches.map(ci => {
+        const linked = already.has(ci.id);
+        return `<div class="ci-result-item${linked ? ' already-linked' : ''}" data-ci-id="${ci.id}">
+          <span>${ci.ciName} <span style="font-size:11px;color:#8aa0b4">— ${ci.owningCluster.split(' ')[0]}</span></span>
+          ${linked ? '<span class="ci-result-badge">Already linked</span>' : '<span class="ci-result-badge">+ Link</span>'}
+        </div>`;
+      }).join('');
+
+  results.classList.add('open');
+
+  results.querySelectorAll('.ci-result-item:not(.already-linked)').forEach(item => {
+    item.addEventListener('click', () => {
+      opportunityCIs.push({ opportunityId: _currentModalOppId, ciId: parseInt(item.dataset.ciId) });
+      results.classList.remove('open');
+      document.getElementById('ci-search-input').value = '';
+      openOppModal(_currentModalOppId);
+      renderCITable();
+      renderOppTable();
+    });
+  });
+});
+
+document.addEventListener('click', e => {
+  const input   = document.getElementById('ci-search-input');
+  const results = document.getElementById('ci-search-results');
+  if (!input.contains(e.target) && !results.contains(e.target))
+    results.classList.remove('open');
+});
+
+renderCITable();
 </script>
 </body>
 </html>
