@@ -373,6 +373,101 @@
       cursor: pointer;
     }
     .btn-secondary:hover { background: #f4f6f8; }
+
+    /* ── Info banner ── */
+    .info-banner {
+      background: #eaf3fb;
+      border: 1px solid #b8d4ea;
+      border-left: 4px solid #1a6fb4;
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #1a4a6e;
+      margin-bottom: 16px;
+    }
+
+    /* ── Amber unlinked row ── */
+    .data-table tbody tr.unlinked { background: #fffbea; }
+    .data-table tbody tr.unlinked:hover { background: #fff6d6; }
+    .unlinked-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: #856404;
+      background: #fff3cd;
+      border: 1px solid #f0d070;
+      border-radius: 10px;
+      padding: 2px 8px;
+    }
+
+    /* ── Primary button ── */
+    .btn-primary {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      background: #1a6fb4;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: #155d9a; }
+
+    /* ── View toolbar (filter bar + add button row) ── */
+    .view-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .view-toolbar .filter-bar { margin-bottom: 0; flex: 1; }
+
+    /* ── Form modal ── */
+    .form-modal .modal { max-width: 520px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #4a6a84;
+      margin-bottom: 5px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      font-size: 13px;
+      color: #2c3e50;
+      background: #f7fafd;
+      border: 1px solid #c8d8e8;
+      border-radius: 4px;
+      padding: 8px 10px;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: #1a6fb4; background: #fff; }
+    .form-group textarea { resize: vertical; min-height: 64px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-error { font-size: 12px; color: #922; margin-top: 4px; display: none; }
+    .modal-footer { gap: 8px; }
+
+    /* ── IR / Project status badges ── */
+    .badge-submitted   { background: #e8eef4; color: #4a6a84; }
+    .badge-in-review   { background: #ddeaf8; color: #1a5f9a; }
+    .badge-approved    { background: #d4f0ea; color: #0e6655; }
+    .badge-rejected    { background: #fde8e8; color: #922; }
+    .badge-not-started { background: #e8eef4; color: #4a6a84; }
+
+    /* ── Opp link in table ── */
+    .opp-link {
+      color: #1a6fb4;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .opp-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -487,11 +582,133 @@
       <h2>Infrastructure Requests</h2>
       <p>References to records in the Ontario intake tool, linked to Opportunities.</p>
     </div>
-    <div class="placeholder-box">
-      <div class="icon">🖥️</div>
-      <h3>Infrastructure Requests — Coming in Phase 3</h3>
+    <div class="info-banner">
+      Request data is manually referenced from the Ontario intake tool. Future state: automated sync.
+    </div>
+    <div class="view-toolbar">
+      <div class="filter-bar" style="margin-bottom:0">
+        <div class="filter-group">
+          <label for="ir-filter-type">Type</label>
+          <select id="ir-filter-type">
+            <option value="">All Types</option>
+            <option>Server Provisioning</option>
+            <option>Network Change</option>
+            <option>Cloud Resource</option>
+            <option>Storage</option>
+          </select>
+        </div>
+        <div class="filter-sep"></div>
+        <div class="filter-group">
+          <label for="ir-filter-status">Status</label>
+          <select id="ir-filter-status">
+            <option value="">All Statuses</option>
+            <option>Submitted</option>
+            <option>In Review</option>
+            <option>Approved</option>
+            <option>In Progress</option>
+            <option>Completed</option>
+            <option>Rejected</option>
+          </select>
+        </div>
+        <button class="btn-clear" id="ir-clear-filters">Clear filters</button>
+        <span class="filter-count" id="ir-filter-count"></span>
+      </div>
+      <button class="btn-primary" id="ir-add-btn">+ Add Reference</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Request ID</th>
+            <th>Request Name</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Linked Opportunity</th>
+            <th>Submitted</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody id="ir-tbody"></tbody>
+      </table>
     </div>
   </section>
+
+  <!-- IR Detail Modal -->
+  <div class="modal-overlay" id="ir-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-ir-name"></h3>
+        <button class="modal-close" id="ir-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-meta" id="modal-ir-meta"></div>
+        <div class="modal-desc" id="modal-ir-desc"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="ir-modal-close2">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IR Add Reference Modal -->
+  <div class="modal-overlay form-modal" id="ir-add-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add Infrastructure Request Reference</h3>
+        <button class="modal-close" id="ir-add-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ir-form-extid">Request ID (from intake tool) *</label>
+            <input type="text" id="ir-form-extid" placeholder="e.g. ONT-IR-2026-0099">
+            <div class="form-error" id="ir-form-extid-err">Required</div>
+          </div>
+          <div class="form-group">
+            <label for="ir-form-name">Request Name *</label>
+            <input type="text" id="ir-form-name" placeholder="Descriptive name">
+            <div class="form-error" id="ir-form-name-err">Required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ir-form-type">Type</label>
+            <select id="ir-form-type">
+              <option>Server Provisioning</option>
+              <option>Network Change</option>
+              <option>Cloud Resource</option>
+              <option>Storage</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ir-form-status">Status</label>
+            <select id="ir-form-status">
+              <option>Submitted</option>
+              <option>In Review</option>
+              <option>Approved</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+              <option>Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="ir-form-opp">Link to Opportunity (optional)</label>
+          <select id="ir-form-opp">
+            <option value="">— Unlinked —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ir-form-desc">Description</label>
+          <textarea id="ir-form-desc" placeholder="Brief description of the request"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="ir-add-cancel">Cancel</button>
+        <button class="btn-primary" id="ir-add-save">Add Reference</button>
+      </div>
+    </div>
+  </div>
 
   <!-- View 3: Projects -->
   <section id="view-projects" class="view">
@@ -499,11 +716,123 @@
       <h2>Projects</h2>
       <p>References to Planview project records, linked to Opportunities.</p>
     </div>
-    <div class="placeholder-box">
-      <div class="icon">📁</div>
-      <h3>Projects — Coming in Phase 3</h3>
+    <div class="info-banner">
+      Project data is manually referenced from Planview. Future state: automated sync via Planview API.
+    </div>
+    <div class="view-toolbar">
+      <div class="filter-bar" style="margin-bottom:0">
+        <div class="filter-group">
+          <label for="proj-filter-status">Status</label>
+          <select id="proj-filter-status">
+            <option value="">All Statuses</option>
+            <option>Not Started</option>
+            <option>In Progress</option>
+            <option>On Hold</option>
+            <option>Completed</option>
+          </select>
+        </div>
+        <button class="btn-clear" id="proj-clear-filters">Clear filters</button>
+        <span class="filter-count" id="proj-filter-count"></span>
+      </div>
+      <button class="btn-primary" id="proj-add-btn">+ Add Reference</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Project ID</th>
+            <th>Project Name</th>
+            <th>Project Manager</th>
+            <th>Status</th>
+            <th>Linked Opportunity</th>
+            <th>Start Date</th>
+            <th>Est. End Date</th>
+          </tr>
+        </thead>
+        <tbody id="proj-tbody"></tbody>
+      </table>
     </div>
   </section>
+
+  <!-- Project Detail Modal -->
+  <div class="modal-overlay" id="proj-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-proj-name"></h3>
+        <button class="modal-close" id="proj-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-meta" id="modal-proj-meta"></div>
+        <div class="modal-desc" id="modal-proj-desc"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="proj-modal-close2">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Add Reference Modal -->
+  <div class="modal-overlay form-modal" id="proj-add-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add Project Reference</h3>
+        <button class="modal-close" id="proj-add-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="proj-form-extid">Project ID (from Planview) *</label>
+            <input type="text" id="proj-form-extid" placeholder="e.g. PV-2026-10600">
+            <div class="form-error" id="proj-form-extid-err">Required</div>
+          </div>
+          <div class="form-group">
+            <label for="proj-form-name">Project Name *</label>
+            <input type="text" id="proj-form-name" placeholder="Descriptive name">
+            <div class="form-error" id="proj-form-name-err">Required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="proj-form-pm">Project Manager</label>
+            <input type="text" id="proj-form-pm" placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label for="proj-form-status">Status</label>
+            <select id="proj-form-status">
+              <option>Not Started</option>
+              <option>In Progress</option>
+              <option>On Hold</option>
+              <option>Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="proj-form-opp">Link to Opportunity (optional)</label>
+          <select id="proj-form-opp">
+            <option value="">— Unlinked —</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="proj-form-start">Start Date</label>
+            <input type="date" id="proj-form-start">
+          </div>
+          <div class="form-group">
+            <label for="proj-form-end">Estimated End Date</label>
+            <input type="date" id="proj-form-end">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="proj-form-desc">Description</label>
+          <textarea id="proj-form-desc" placeholder="Brief description of the project"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="proj-add-cancel">Cancel</button>
+        <button class="btn-primary" id="proj-add-save">Add Reference</button>
+      </div>
+    </div>
+  </div>
 
   <!-- View 4: Solutions -->
   <section id="view-solutions" class="view">
@@ -877,6 +1206,332 @@ document.getElementById('opp-modal').addEventListener('click', e => {
 
 // Initial render
 renderOppTable();
+
+// ════════════════════════════════════════════════════════════
+//  VIEW 2 — INFRASTRUCTURE REQUESTS
+// ════════════════════════════════════════════════════════════
+
+function irStatusBadgeClass(s) {
+  const map = {
+    'Submitted':   'badge badge-submitted',
+    'In Review':   'badge badge-in-review',
+    'Approved':    'badge badge-approved',
+    'In Progress': 'badge badge-in-planning',
+    'Completed':   'badge badge-completed',
+    'Rejected':    'badge badge-rejected',
+  };
+  return map[s] || 'badge badge-submitted';
+}
+
+function renderIRTable() {
+  const typeFilter   = document.getElementById('ir-filter-type').value;
+  const statusFilter = document.getElementById('ir-filter-status').value;
+
+  let filtered = infrastructureRequests.filter(r => {
+    if (typeFilter   && r.type   !== typeFilter)   return false;
+    if (statusFilter && r.status !== statusFilter) return false;
+    return true;
+  });
+
+  document.getElementById('ir-filter-count').textContent =
+    filtered.length === infrastructureRequests.length
+      ? `${infrastructureRequests.length} requests`
+      : `${filtered.length} of ${infrastructureRequests.length} requests`;
+
+  const tbody = document.getElementById('ir-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="table-empty">No requests match the current filters.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => {
+    const opp      = r.opportunityId ? opportunities.find(o => o.id === r.opportunityId) : null;
+    const isUnlink = !r.opportunityId;
+    const oppCell  = opp
+      ? `<span class="opp-link" data-nav-opp="${opp.id}">${opp.name}</span>`
+      : `<span class="unlinked-badge">Unlinked</span>`;
+
+    return `<tr class="${isUnlink ? 'unlinked' : ''}" data-ir-id="${r.id}" style="cursor:pointer">
+      <td><code style="font-size:12px;color:#4a6a84">${r.externalRequestId}</code></td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.type}</td>
+      <td><span class="${irStatusBadgeClass(r.status)}">${r.status}</span></td>
+      <td>${oppCell}</td>
+      <td>${fmtDate(r.submittedDate)}</td>
+      <td>${fmtDate(r.lastUpdated)}</td>
+    </tr>`;
+  }).join('');
+
+  // Row click → detail modal
+  tbody.querySelectorAll('tr[data-ir-id]').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.dataset.navOpp) return;
+      openIRModal(parseInt(row.dataset.irId));
+    });
+  });
+
+  // Opp link → navigate back to Opportunities
+  tbody.querySelectorAll('[data-nav-opp]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      navigateTo('view-opportunities', { highlightOppId: parseInt(el.dataset.navOpp) });
+    });
+  });
+}
+
+function openIRModal(irId) {
+  const r   = infrastructureRequests.find(x => x.id === irId);
+  if (!r) return;
+  const opp = r.opportunityId ? opportunities.find(o => o.id === r.opportunityId) : null;
+
+  document.getElementById('modal-ir-name').textContent = r.name;
+  document.getElementById('modal-ir-desc').textContent = r.description || '—';
+  document.getElementById('modal-ir-meta').innerHTML = `
+    <div class="modal-field"><label>Request ID</label><span><code>${r.externalRequestId}</code></span></div>
+    <div class="modal-field"><label>Type</label><span>${r.type}</span></div>
+    <div class="modal-field"><label>Status</label><span><span class="${irStatusBadgeClass(r.status)}">${r.status}</span></span></div>
+    <div class="modal-field"><label>Linked Opportunity</label><span>${opp ? opp.name : '<em style="color:#aaa">Unlinked</em>'}</span></div>
+    <div class="modal-field"><label>Submitted Date</label><span>${fmtDate(r.submittedDate)}</span></div>
+    <div class="modal-field"><label>Last Updated</label><span>${fmtDate(r.lastUpdated)}</span></div>
+  `;
+  document.getElementById('ir-modal').classList.add('open');
+}
+
+['ir-modal-close','ir-modal-close2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () =>
+    document.getElementById('ir-modal').classList.remove('open'));
+});
+document.getElementById('ir-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('ir-modal'))
+    document.getElementById('ir-modal').classList.remove('open');
+});
+
+// Filters
+document.getElementById('ir-filter-type').addEventListener('change', renderIRTable);
+document.getElementById('ir-filter-status').addEventListener('change', renderIRTable);
+document.getElementById('ir-clear-filters').addEventListener('click', () => {
+  document.getElementById('ir-filter-type').value   = '';
+  document.getElementById('ir-filter-status').value = '';
+  renderIRTable();
+});
+
+// ── Add Reference Modal ───────────────────────────────────
+
+(function populateIROppSelect() {
+  const sel = document.getElementById('ir-form-opp');
+  opportunities.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.id;
+    opt.textContent = o.name;
+    sel.appendChild(opt);
+  });
+})();
+
+document.getElementById('ir-add-btn').addEventListener('click', () =>
+  document.getElementById('ir-add-modal').classList.add('open'));
+['ir-add-close','ir-add-cancel'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () =>
+    document.getElementById('ir-add-modal').classList.remove('open'));
+});
+document.getElementById('ir-add-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('ir-add-modal'))
+    document.getElementById('ir-add-modal').classList.remove('open');
+});
+
+document.getElementById('ir-add-save').addEventListener('click', () => {
+  const extId = document.getElementById('ir-form-extid').value.trim();
+  const name  = document.getElementById('ir-form-name').value.trim();
+  let valid   = true;
+
+  document.getElementById('ir-form-extid-err').style.display = extId ? 'none' : 'block';
+  document.getElementById('ir-form-name-err').style.display  = name  ? 'none' : 'block';
+  if (!extId || !name) return;
+
+  const oppVal = document.getElementById('ir-form-opp').value;
+  infrastructureRequests.push({
+    id: infrastructureRequests.length + 1,
+    externalRequestId: extId,
+    name,
+    type:          document.getElementById('ir-form-type').value,
+    status:        document.getElementById('ir-form-status').value,
+    opportunityId: oppVal ? parseInt(oppVal) : null,
+    submittedDate: TODAY,
+    lastUpdated:   TODAY,
+    description:   document.getElementById('ir-form-desc').value.trim(),
+  });
+
+  // Reset form
+  ['ir-form-extid','ir-form-name','ir-form-desc'].forEach(id =>
+    document.getElementById(id).value = '');
+  document.getElementById('ir-form-opp').value    = '';
+  document.getElementById('ir-form-type').value   = 'Server Provisioning';
+  document.getElementById('ir-form-status').value = 'Submitted';
+
+  document.getElementById('ir-add-modal').classList.remove('open');
+  renderIRTable();
+  renderOppTable(); // refresh linked counts
+});
+
+renderIRTable();
+
+// ════════════════════════════════════════════════════════════
+//  VIEW 3 — PROJECTS
+// ════════════════════════════════════════════════════════════
+
+function projStatusBadgeClass(s) {
+  const map = {
+    'Not Started': 'badge badge-not-started',
+    'In Progress': 'badge badge-in-planning',
+    'On Hold':     'badge badge-on-hold',
+    'Completed':   'badge badge-completed',
+  };
+  return map[s] || 'badge badge-not-started';
+}
+
+function renderProjTable() {
+  const statusFilter = document.getElementById('proj-filter-status').value;
+
+  let filtered = projects.filter(p => {
+    if (statusFilter && p.status !== statusFilter) return false;
+    return true;
+  });
+
+  document.getElementById('proj-filter-count').textContent =
+    filtered.length === projects.length
+      ? `${projects.length} projects`
+      : `${filtered.length} of ${projects.length} projects`;
+
+  const tbody = document.getElementById('proj-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="table-empty">No projects match the current filters.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => {
+    const opp      = p.opportunityId ? opportunities.find(o => o.id === p.opportunityId) : null;
+    const isUnlink = !p.opportunityId;
+    const oppCell  = opp
+      ? `<span class="opp-link" data-nav-opp="${opp.id}">${opp.name}</span>`
+      : `<span class="unlinked-badge">Unlinked</span>`;
+
+    return `<tr class="${isUnlink ? 'unlinked' : ''}" data-proj-id="${p.id}" style="cursor:pointer">
+      <td><code style="font-size:12px;color:#4a6a84">${p.externalProjectId}</code></td>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.projectManager || '—'}</td>
+      <td><span class="${projStatusBadgeClass(p.status)}">${p.status}</span></td>
+      <td>${oppCell}</td>
+      <td>${fmtDate(p.startDate)}</td>
+      <td>${fmtDate(p.estimatedEndDate)}</td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('tr[data-proj-id]').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.dataset.navOpp) return;
+      openProjModal(parseInt(row.dataset.projId));
+    });
+  });
+
+  tbody.querySelectorAll('[data-nav-opp]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      navigateTo('view-opportunities', { highlightOppId: parseInt(el.dataset.navOpp) });
+    });
+  });
+}
+
+function openProjModal(projId) {
+  const p   = projects.find(x => x.id === projId);
+  if (!p) return;
+  const opp = p.opportunityId ? opportunities.find(o => o.id === p.opportunityId) : null;
+
+  document.getElementById('modal-proj-name').textContent = p.name;
+  document.getElementById('modal-proj-desc').textContent = p.description || '—';
+  document.getElementById('modal-proj-meta').innerHTML = `
+    <div class="modal-field"><label>Project ID (Planview)</label><span><code>${p.externalProjectId}</code></span></div>
+    <div class="modal-field"><label>Project Manager</label><span>${p.projectManager || '—'}</span></div>
+    <div class="modal-field"><label>Status</label><span><span class="${projStatusBadgeClass(p.status)}">${p.status}</span></span></div>
+    <div class="modal-field"><label>Linked Opportunity</label><span>${opp ? opp.name : '<em style="color:#aaa">Unlinked</em>'}</span></div>
+    <div class="modal-field"><label>Start Date</label><span>${fmtDate(p.startDate)}</span></div>
+    <div class="modal-field"><label>Est. End Date</label><span>${fmtDate(p.estimatedEndDate)}</span></div>
+  `;
+  document.getElementById('proj-modal').classList.add('open');
+}
+
+['proj-modal-close','proj-modal-close2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () =>
+    document.getElementById('proj-modal').classList.remove('open'));
+});
+document.getElementById('proj-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('proj-modal'))
+    document.getElementById('proj-modal').classList.remove('open');
+});
+
+document.getElementById('proj-filter-status').addEventListener('change', renderProjTable);
+document.getElementById('proj-clear-filters').addEventListener('click', () => {
+  document.getElementById('proj-filter-status').value = '';
+  renderProjTable();
+});
+
+// ── Add Reference Modal ───────────────────────────────────
+
+(function populateProjOppSelect() {
+  const sel = document.getElementById('proj-form-opp');
+  opportunities.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.id;
+    opt.textContent = o.name;
+    sel.appendChild(opt);
+  });
+})();
+
+document.getElementById('proj-add-btn').addEventListener('click', () =>
+  document.getElementById('proj-add-modal').classList.add('open'));
+['proj-add-close','proj-add-cancel'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () =>
+    document.getElementById('proj-add-modal').classList.remove('open'));
+});
+document.getElementById('proj-add-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('proj-add-modal'))
+    document.getElementById('proj-add-modal').classList.remove('open');
+});
+
+document.getElementById('proj-add-save').addEventListener('click', () => {
+  const extId = document.getElementById('proj-form-extid').value.trim();
+  const name  = document.getElementById('proj-form-name').value.trim();
+
+  document.getElementById('proj-form-extid-err').style.display = extId ? 'none' : 'block';
+  document.getElementById('proj-form-name-err').style.display  = name  ? 'none' : 'block';
+  if (!extId || !name) return;
+
+  const oppVal  = document.getElementById('proj-form-opp').value;
+  const startRaw = document.getElementById('proj-form-start').value;
+  const endRaw   = document.getElementById('proj-form-end').value;
+
+  projects.push({
+    id: projects.length + 1,
+    externalProjectId: extId,
+    name,
+    projectManager:  document.getElementById('proj-form-pm').value.trim() || null,
+    status:          document.getElementById('proj-form-status').value,
+    opportunityId:   oppVal ? parseInt(oppVal) : null,
+    startDate:       startRaw || null,
+    estimatedEndDate: endRaw || null,
+    description:     document.getElementById('proj-form-desc').value.trim(),
+  });
+
+  ['proj-form-extid','proj-form-name','proj-form-pm','proj-form-desc',
+   'proj-form-start','proj-form-end'].forEach(id =>
+    document.getElementById(id).value = '');
+  document.getElementById('proj-form-opp').value    = '';
+  document.getElementById('proj-form-status').value = 'Not Started';
+
+  document.getElementById('proj-add-modal').classList.remove('open');
+  renderProjTable();
+  renderOppTable();
+});
+
+renderProjTable();
 </script>
 </body>
 </html>
