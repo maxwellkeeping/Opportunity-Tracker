@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opportunity Portfolio Tracker</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      color: #2c3e50;
+      background: #f4f6f8;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .app-header {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .app-header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .app-header .subtitle {
+      font-size: 12px;
+      color: #a8c4e0;
+      margin-left: 12px;
+      padding-left: 12px;
+      border-left: 1px solid #3a5f82;
+    }
+
+    /* ── Navigation ── */
+    .nav-bar {
+      background: #fff;
+      border-bottom: 2px solid #d0dce8;
+      padding: 0 24px;
+      display: flex;
+      gap: 0;
+    }
+    .nav-tab {
+      padding: 14px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #5a7a96;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .nav-tab:hover { color: #1a3a5c; }
+    .nav-tab.active {
+      color: #1a3a5c;
+      border-bottom-color: #1a6fb4;
+      font-weight: 600;
+    }
+
+    /* ── Main Content ── */
+    .main-content {
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── Views ── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .view-header {
+      margin-bottom: 20px;
+    }
+    .view-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a3a5c;
+      margin-bottom: 4px;
+    }
+    .view-header p {
+      font-size: 13px;
+      color: #6b8299;
+    }
+
+    /* ── Placeholder content ── */
+    .placeholder-box {
+      background: #fff;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+      padding: 40px;
+      text-align: center;
+      color: #8aa0b4;
+    }
+    .placeholder-box .icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .placeholder-box h3 {
+      font-size: 15px;
+      color: #4a6a84;
+      margin-bottom: 6px;
+    }
+
+    /* ── Data debug panel (Phase 1 only) ── */
+    .data-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .data-card {
+      background: #fff;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+      padding: 16px 20px;
+    }
+    .data-card .label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8aa0b4;
+      margin-bottom: 4px;
+    }
+    .data-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a3a5c;
+    }
+    .data-card .sub {
+      font-size: 12px;
+      color: #8aa0b4;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="app-header">
+  <h1>Opportunity Portfolio Tracker</h1>
+  <span class="subtitle">Ontario I&amp;IT Portfolio Management</span>
+</header>
+
+<!-- ── Navigation ── -->
+<nav class="nav-bar">
+  <div class="nav-tab active"  data-view="view-opportunities">Opportunities</div>
+  <div class="nav-tab"         data-view="view-infra">Infrastructure Requests</div>
+  <div class="nav-tab"         data-view="view-projects">Projects</div>
+  <div class="nav-tab"         data-view="view-solutions">Solutions</div>
+  <div class="nav-tab"         data-view="view-dashboard">Leadership Dashboard</div>
+</nav>
+
+<!-- ── Views ── -->
+<main class="main-content">
+
+  <!-- View 1: Opportunities -->
+  <section id="view-opportunities" class="view active">
+    <div class="view-header">
+      <h2>Opportunity Registry</h2>
+      <p>All annual planning Opportunities across Ontario I&amp;IT clusters.</p>
+    </div>
+    <div id="opp-data-summary" class="data-summary"></div>
+    <div class="placeholder-box">
+      <div class="icon">📋</div>
+      <h3>Opportunity Registry — Coming in Phase 2</h3>
+      <p>Navigation and data verified. Full table view builds next.</p>
+    </div>
+  </section>
+
+  <!-- View 2: Infrastructure Requests -->
+  <section id="view-infra" class="view">
+    <div class="view-header">
+      <h2>Infrastructure Requests</h2>
+      <p>References to records in the Ontario intake tool, linked to Opportunities.</p>
+    </div>
+    <div class="placeholder-box">
+      <div class="icon">🖥️</div>
+      <h3>Infrastructure Requests — Coming in Phase 3</h3>
+    </div>
+  </section>
+
+  <!-- View 3: Projects -->
+  <section id="view-projects" class="view">
+    <div class="view-header">
+      <h2>Projects</h2>
+      <p>References to Planview project records, linked to Opportunities.</p>
+    </div>
+    <div class="placeholder-box">
+      <div class="icon">📁</div>
+      <h3>Projects — Coming in Phase 3</h3>
+    </div>
+  </section>
+
+  <!-- View 4: Solutions -->
+  <section id="view-solutions" class="view">
+    <div class="view-header">
+      <h2>Solutions (CMDB)</h2>
+      <p>Configuration Items sourced from CMDB, linked to Opportunities.</p>
+    </div>
+    <div class="placeholder-box">
+      <div class="icon">⚙️</div>
+      <h3>Solutions (CMDB) — Coming in Phase 4</h3>
+    </div>
+  </section>
+
+  <!-- View 5: Leadership Dashboard -->
+  <section id="view-dashboard" class="view">
+    <div class="view-header">
+      <h2>Leadership Dashboard</h2>
+      <p>Portfolio health summary across all clusters.</p>
+    </div>
+    <div class="placeholder-box">
+      <div class="icon">📊</div>
+      <h3>Leadership Dashboard — Coming in Phase 5</h3>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  MOCK DATA
+// ════════════════════════════════════════════════════════════
+
+const clusters = [
+  { id: 1, name: "Central Agencies I&IT Cluster",                ministry: "Treasury Board Secretariat" },
+  { id: 2, name: "Health Services I&IT Cluster",                 ministry: "Ministry of Health / Ministry of Long-Term Care" },
+  { id: 3, name: "Land and Resources I&IT Cluster",              ministry: "MNDMNRF / MECP / OMAFA / Energy / Indigenous Affairs" },
+  { id: 4, name: "Justice Technology Services Cluster",          ministry: "Ministry of the Attorney General" },
+  { id: 5, name: "Labour and Transportation Cluster",            ministry: "Ministry of Labour / Ministry of Transportation" },
+  { id: 6, name: "Community Services I&IT Cluster",              ministry: "MCCSS / Ministry of Children / Municipal Affairs" },
+  { id: 7, name: "Government Services Integration Cluster",      ministry: "Ministry of Public and Business Service Delivery" },
+  { id: 8, name: "Children, Youth and Social Services I&IT Cluster", ministry: "Ministry of Children, Community and Social Services" }
+];
+
+// Today = 2026-03-27
+const opportunities = [
+  // Overdue to Start: plannedStartDate in the past, status still Identified or In Planning
+  { id: 1,  name: "Enterprise Identity Modernization",           clusterId: 1, priority: "High",   status: "In Planning",  plannedStartDate: "2025-10-01", lastUpdated: "2025-12-15", description: "Modernize identity and access management across central agency systems." },
+  { id: 2,  name: "Health Data Integration Hub",                 clusterId: 2, priority: "High",   status: "Identified",   plannedStartDate: "2025-11-15", lastUpdated: "2026-01-08", description: "Integrate disparate health data sources into a unified analytics platform." },
+  { id: 3,  name: "Crown Land Registry Digitization",            clusterId: 3, priority: "Medium", status: "In Planning",  plannedStartDate: "2026-01-01", lastUpdated: "2026-02-20", description: "Digitize legacy Crown land registry records and migrate to cloud storage." },
+  { id: 4,  name: "Court Case Management Upgrade",               clusterId: 4, priority: "High",   status: "Active",       plannedStartDate: "2025-09-01", lastUpdated: "2026-03-01", description: "Upgrade the provincial court case management platform to the latest release." },
+  { id: 5,  name: "Driver Licence Renewal Online Expansion",     clusterId: 5, priority: "High",   status: "Active",       plannedStartDate: "2025-12-01", lastUpdated: "2026-03-10", description: "Expand online renewal capabilities to all driver licence classes." },
+  { id: 6,  name: "Social Assistance Payment Modernization",     clusterId: 6, priority: "High",   status: "In Planning",  plannedStartDate: "2025-08-01", lastUpdated: "2025-11-30", description: "Replace legacy mainframe-based payment processing for Ontario Works." },
+  { id: 7,  name: "ServiceOntario Portal Redesign",              clusterId: 7, priority: "Medium", status: "Active",       plannedStartDate: "2026-01-15", lastUpdated: "2026-03-05", description: "Redesign the public-facing ServiceOntario portal for accessibility and UX." },
+  { id: 8,  name: "Child Protection Case Tracking",              clusterId: 8, priority: "High",   status: "Identified",   plannedStartDate: "2025-12-01", lastUpdated: "2026-01-20", description: "Implement a new case tracking system for child protection workers." },
+  // Missing Start Date: plannedStartDate is null
+  { id: 9,  name: "Budget Forecasting Tool Replacement",         clusterId: 1, priority: "Medium", status: "Identified",   plannedStartDate: null,         lastUpdated: "2026-02-14", description: "Replace the aging spreadsheet-based budget forecasting tool with a web application." },
+  { id: 10, name: "Environmental Monitoring Data Platform",      clusterId: 3, priority: "Medium", status: "In Planning",  plannedStartDate: null,         lastUpdated: "2026-03-01", description: "Consolidate environmental sensor and monitoring data into a central platform." },
+  { id: 11, name: "Labour Market Information Modernization",     clusterId: 5, priority: "Low",    status: "Identified",   plannedStartDate: null,         lastUpdated: "2026-01-05", description: "Modernize labour market data collection and public reporting tools." },
+  // Normal — Active or Completed, with start dates
+  { id: 12, name: "Cyber Threat Intelligence Sharing Platform",  clusterId: 1, priority: "High",   status: "Active",       plannedStartDate: "2025-07-01", lastUpdated: "2026-03-20", description: "Build a cross-cluster platform for sharing cyber threat intelligence." },
+  { id: 13, name: "OHIP Claims Processing Optimization",         clusterId: 2, priority: "Medium", status: "Completed",    plannedStartDate: "2025-04-01", lastUpdated: "2026-02-28", description: "Optimize OHIP claims processing pipeline to reduce adjudication time." },
+  { id: 14, name: "Municipal Partner Integration Gateway",       clusterId: 7, priority: "Medium", status: "On Hold",      plannedStartDate: "2026-02-01", lastUpdated: "2026-03-15", description: "Create a secure API gateway for municipal partner data exchanges." },
+  { id: 15, name: "Youth Justice Digital Case Files",            clusterId: 8, priority: "Low",    status: "Identified",   plannedStartDate: null,         lastUpdated: "2025-12-10", description: "Digitize youth justice case files and implement structured data capture." }
+];
+
+// References to records in the Ontario intake tool
+const infrastructureRequests = [
+  { id: 1,  externalRequestId: "ONT-IR-2025-0412", name: "IAM Platform Server Provisioning",       type: "Server Provisioning", status: "In Progress",  opportunityId: 1,    submittedDate: "2025-10-15", lastUpdated: "2026-02-10", description: "Provision new server cluster for IAM platform in GovCloud." },
+  { id: 2,  externalRequestId: "ONT-IR-2025-0538", name: "Health Hub Network Segmentation",         type: "Network Change",      status: "Approved",     opportunityId: 2,    submittedDate: "2025-11-20", lastUpdated: "2026-01-30", description: "Network segmentation for the Health Data Integration Hub environment." },
+  { id: 3,  externalRequestId: "ONT-IR-2025-0601", name: "Cloud Storage for Crown Land Docs",       type: "Cloud Resource",      status: "In Progress",  opportunityId: 3,    submittedDate: "2026-01-05", lastUpdated: "2026-02-25", description: "Provision Azure Blob Storage for scanned Crown land documents." },
+  { id: 4,  externalRequestId: "ONT-IR-2025-0389", name: "Court CMS DB Server Upgrade",             type: "Server Provisioning", status: "Completed",    opportunityId: 4,    submittedDate: "2025-08-10", lastUpdated: "2025-12-01", description: "Upgrade database servers supporting the Court Case Management System." },
+  { id: 5,  externalRequestId: "ONT-IR-2025-0714", name: "ServiceOntario CDN Configuration",        type: "Network Change",      status: "In Review",    opportunityId: 7,    submittedDate: "2026-01-20", lastUpdated: "2026-03-01", description: "Configure CDN for improved portal performance across regions." },
+  { id: 6,  externalRequestId: "ONT-IR-2026-0023", name: "Child Protection App Hosting",            type: "Cloud Resource",      status: "Submitted",    opportunityId: 8,    submittedDate: "2026-02-01", lastUpdated: "2026-02-01", description: "Cloud hosting environment for child protection case tracking application." },
+  { id: 7,  externalRequestId: "ONT-IR-2025-0822", name: "Cyber Intel Platform Storage",            type: "Storage",             status: "In Progress",  opportunityId: 12,   submittedDate: "2025-07-15", lastUpdated: "2026-03-10", description: "High-capacity storage provisioning for threat intelligence data lake." },
+  { id: 8,  externalRequestId: "ONT-IR-2026-0041", name: "Driver Licence API Gateway",              type: "Network Change",      status: "Approved",     opportunityId: 5,    submittedDate: "2026-02-10", lastUpdated: "2026-03-05", description: "API gateway configuration for the expanded driver licence renewal service." },
+  // Unlinked — no Opportunity assigned
+  { id: 9,  externalRequestId: "ONT-IR-2026-0055", name: "Legacy Mainframe Backup Storage",         type: "Storage",             status: "Submitted",    opportunityId: null, submittedDate: "2026-03-01", lastUpdated: "2026-03-01", description: "Additional backup storage for legacy mainframe systems." },
+  { id: 10, externalRequestId: "ONT-IR-2026-0062", name: "Dev Environment VM Provisioning",         type: "Server Provisioning", status: "In Review",    opportunityId: null, submittedDate: "2026-03-10", lastUpdated: "2026-03-10", description: "Development environment virtual machines for a new project team." }
+];
+
+// References to records in Planview
+const projects = [
+  { id: 1,  externalProjectId: "PV-2025-10044", name: "IAM Modernization — Phase 1",               projectManager: "Asha Kapoor",        status: "In Progress",  opportunityId: 1,    startDate: "2025-11-01", estimatedEndDate: "2026-06-30", description: "Phase 1: Requirements, architecture, and vendor selection for IAM modernization." },
+  { id: 2,  externalProjectId: "PV-2025-10198", name: "Health Data Hub — Discovery",                projectManager: "Martin Osei",        status: "In Progress",  opportunityId: 2,    startDate: "2026-01-15", estimatedEndDate: "2026-05-31", description: "Discovery and design phase for the Health Data Integration Hub." },
+  { id: 3,  externalProjectId: "PV-2025-09871", name: "Court CMS Upgrade — Deployment",            projectManager: "Jennifer Lalonde",   status: "Completed",    opportunityId: 4,    startDate: "2025-09-10", estimatedEndDate: "2026-01-31", description: "Full deployment of upgraded Court Case Management System." },
+  { id: 4,  externalProjectId: "PV-2026-10301", name: "Driver Licence Online — Phase 2",           projectManager: "Raj Patel",          status: "In Progress",  opportunityId: 5,    startDate: "2026-01-01", estimatedEndDate: "2026-09-30", description: "Phase 2 expansion of online renewal to commercial and bus licences." },
+  { id: 5,  externalProjectId: "PV-2025-10055", name: "Social Assistance Payment — Assessment",    projectManager: "Cynthia Beaumont",   status: "On Hold",      opportunityId: 6,    startDate: "2025-09-01", estimatedEndDate: "2026-03-31", description: "Technical assessment and options analysis for payment system modernization." },
+  { id: 6,  externalProjectId: "PV-2026-10412", name: "ServiceOntario Portal — UX Redesign",       projectManager: "Thomas Nguyen",      status: "In Progress",  opportunityId: 7,    startDate: "2026-02-01", estimatedEndDate: "2026-10-31", description: "Full UX redesign and accessibility remediation for ServiceOntario portal." },
+  { id: 7,  externalProjectId: "PV-2025-10177", name: "Cyber Intel Platform — Build",              projectManager: "Sandra Willis",      status: "In Progress",  opportunityId: 12,   startDate: "2025-08-01", estimatedEndDate: "2026-07-31", description: "Build phase for the cross-cluster cyber threat intelligence sharing platform." },
+  { id: 8,  externalProjectId: "PV-2025-09950", name: "OHIP Claims Optimization",                  projectManager: "David Chen",         status: "Completed",    opportunityId: 13,   startDate: "2025-04-15", estimatedEndDate: "2026-01-15", description: "Claims processing pipeline optimization — all milestones complete." },
+  // Unlinked
+  { id: 9,  externalProjectId: "PV-2026-10488", name: "Data Governance Framework Implementation",  projectManager: "Fatima Al-Hassan",   status: "Not Started",  opportunityId: null, startDate: "2026-04-01", estimatedEndDate: "2026-12-31", description: "Enterprise data governance framework rollout across clusters." },
+  { id: 10, externalProjectId: "PV-2026-10501", name: "Accessibility Compliance Audit",            projectManager: "Pierre Tremblay",    status: "Not Started",  opportunityId: null, startDate: "2026-05-01", estimatedEndDate: "2026-08-31", description: "AODA compliance audit and remediation across public-facing systems." }
+];
+
+// Simulated CMDB CI data (would be fetched via API in production)
+const configurationItems = [
+  { id: 1, ciName: "IAM-PROD-01",          owningCluster: "Central Agencies I&IT Cluster",                  environment: "Prod",     hostingType: "On-prem", description: "Production identity and access management server." },
+  { id: 2, ciName: "HEALTH-DW-PROD",       owningCluster: "Health Services I&IT Cluster",                   environment: "Prod",     hostingType: "Cloud",   description: "Health data warehouse — production environment." },
+  { id: 3, ciName: "HEALTH-DW-NONPROD",    owningCluster: "Health Services I&IT Cluster",                   environment: "Non-Prod", hostingType: "Cloud",   description: "Health data warehouse — non-production environment." },
+  { id: 4, ciName: "COURT-CMS-APP",        owningCluster: "Justice Technology Services Cluster",            environment: "Prod",     hostingType: "On-prem", description: "Court Case Management System application server." },
+  { id: 5, ciName: "COURT-CMS-DB",         owningCluster: "Justice Technology Services Cluster",            environment: "Prod",     hostingType: "On-prem", description: "Court Case Management System database server." },
+  { id: 6, ciName: "SVCONT-WEB-PROD",      owningCluster: "Government Services Integration Cluster",        environment: "Prod",     hostingType: "Cloud",   description: "ServiceOntario web portal — production." },
+  { id: 7, ciName: "CYBER-INTEL-STORE",    owningCluster: "Central Agencies I&IT Cluster",                  environment: "Prod",     hostingType: "Hybrid",  description: "Cyber threat intelligence data storage." },
+  { id: 8, ciName: "SOC-ASSIST-MAINFRAME", owningCluster: "Community Services I&IT Cluster",                environment: "Prod",     hostingType: "On-prem", description: "Legacy mainframe hosting social assistance payment processing." },
+  { id: 9, ciName: "CROWN-LAND-STORE",     owningCluster: "Land and Resources I&IT Cluster",                environment: "Non-Prod", hostingType: "Cloud",   description: "Cloud document storage for Crown land registry." }
+];
+
+// Many-to-many join: Opportunities ↔ CIs
+const opportunityCIs = [
+  { opportunityId: 1,  ciId: 1 },   // Enterprise Identity Modernization → IAM-PROD-01
+  { opportunityId: 2,  ciId: 2 },   // Health Data Hub → HEALTH-DW-PROD
+  { opportunityId: 2,  ciId: 3 },   // Health Data Hub → HEALTH-DW-NONPROD
+  { opportunityId: 3,  ciId: 9 },   // Crown Land Registry → CROWN-LAND-STORE
+  { opportunityId: 4,  ciId: 4 },   // Court CMS Upgrade → COURT-CMS-APP
+  { opportunityId: 4,  ciId: 5 },   // Court CMS Upgrade → COURT-CMS-DB
+  { opportunityId: 6,  ciId: 8 },   // Social Assistance → SOC-ASSIST-MAINFRAME
+  { opportunityId: 7,  ciId: 6 },   // ServiceOntario Portal → SVCONT-WEB-PROD
+  { opportunityId: 12, ciId: 7 },   // Cyber Intel Platform → CYBER-INTEL-STORE
+  { opportunityId: 12, ciId: 1 },   // Cyber Intel Platform → IAM-PROD-01 (shared CI)
+  { opportunityId: 13, ciId: 2 },   // OHIP Claims → HEALTH-DW-PROD (shared CI)
+  { opportunityId: 5,  ciId: 6 },   // Driver Licence → SVCONT-WEB-PROD (shared CI)
+];
+
+// ════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════════════════════
+
+function navigateTo(viewId, params = {}) {
+  // Deactivate all tabs and views
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+  // Activate the target view
+  const targetView = document.getElementById(viewId);
+  const targetTab  = document.querySelector(`.nav-tab[data-view="${viewId}"]`);
+  if (targetView) targetView.classList.add('active');
+  if (targetTab)  targetTab.classList.add('active');
+
+  // Store params for the view to consume (used for cross-view filtering)
+  window._navParams = params;
+}
+
+// Wire up nav tabs
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => navigateTo(tab.dataset.view));
+});
+
+// ════════════════════════════════════════════════════════════
+//  PHASE 1 — DATA VERIFICATION SUMMARY
+// ════════════════════════════════════════════════════════════
+
+function renderDataSummary() {
+  const el = document.getElementById('opp-data-summary');
+  if (!el) return;
+
+  const unlinkedIR    = infrastructureRequests.filter(r => r.opportunityId === null).length;
+  const unlinkedProj  = projects.filter(p => p.opportunityId === null).length;
+  const today         = new Date('2026-03-27');
+  const overdue       = opportunities.filter(o =>
+    o.plannedStartDate &&
+    new Date(o.plannedStartDate) < today &&
+    (o.status === 'Identified' || o.status === 'In Planning')
+  ).length;
+  const missingDate   = opportunities.filter(o => !o.plannedStartDate).length;
+
+  const cards = [
+    { label: 'Clusters',                value: clusters.length,                sub: 'Ontario I&IT' },
+    { label: 'Opportunities',           value: opportunities.length,           sub: 'across all clusters' },
+    { label: 'Infrastructure Requests', value: infrastructureRequests.length,  sub: `${unlinkedIR} unlinked` },
+    { label: 'Projects',                value: projects.length,                sub: `${unlinkedProj} unlinked` },
+    { label: 'Configuration Items',     value: configurationItems.length,      sub: 'from CMDB' },
+    { label: 'CI Links',                value: opportunityCIs.length,          sub: 'many-to-many' },
+    { label: 'Overdue to Start',        value: overdue,                        sub: 'need attention' },
+    { label: 'Missing Start Date',      value: missingDate,                    sub: 'incomplete planning' }
+  ];
+
+  el.innerHTML = cards.map(c => `
+    <div class="data-card">
+      <div class="label">${c.label}</div>
+      <div class="value">${c.value}</div>
+      <div class="sub">${c.sub}</div>
+    </div>
+  `).join('');
+}
+
+renderDataSummary();
+</script>
+</body>
+</html>
