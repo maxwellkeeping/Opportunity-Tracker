@@ -1191,6 +1191,10 @@
         <div class="modal-desc" id="modal-ci-desc"></div>
         <div class="modal-section-title">Linked Opportunities</div>
         <div class="modal-links" id="modal-ci-opps"></div>
+        <div class="ci-link-row">
+          <input type="text" id="opp-search-input" class="ci-search-input" placeholder="Search Opportunity by name to link…" autocomplete="off">
+          <div id="opp-search-results" class="ci-search-results"></div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn-secondary" id="ci-modal-close2">Close</button>
@@ -2088,22 +2092,85 @@ function openCIModal(ciId) {
     <div class="modal-field"><label>Hosting Type</label><span><span class="${hostBadgeClass(ci.hostingType)}">${ci.hostingType}</span></span></div>
   `;
 
+  _renderCILinkedOpps(ciId);
+
+  document.getElementById('opp-search-input').value = '';
+  document.getElementById('opp-search-results').classList.remove('open');
+  document.getElementById('ci-modal').classList.add('open');
+}
+
+let _currentModalCiId = null;
+
+function _renderCILinkedOpps(ciId) {
+  _currentModalCiId = ciId;
   const linkedOpps = opportunityCIs.filter(x => x.ciId === ciId)
     .map(x => opportunities.find(o => o.id === x.opportunityId)).filter(Boolean);
 
-  document.getElementById('modal-ci-opps').innerHTML = linkedOpps.length
-    ? linkedOpps.map(o => `<span class="modal-link-chip" data-nav-opp-from-ci="${o.id}">${o.name}</span>`).join('')
+  const container = document.getElementById('modal-ci-opps');
+  container.innerHTML = linkedOpps.length
+    ? linkedOpps.map(o => `
+        <span class="modal-link-chip">
+          ${o.name}
+          <span class="ci-remove" data-remove-opp="${o.id}" data-remove-ci="${ciId}" title="Unlink">&times;</span>
+        </span>`).join('')
     : '<span class="modal-none">No linked Opportunities</span>';
 
-  document.querySelectorAll('[data-nav-opp-from-ci]').forEach(el => {
-    el.addEventListener('click', () => {
-      closeCIModal();
-      navigateTo('view-opportunities', { highlightOppId: parseInt(el.dataset.navOppFromCi) });
+  container.querySelectorAll('[data-remove-opp]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const oppId = parseInt(btn.dataset.removeOpp);
+      const cId   = parseInt(btn.dataset.removeCi);
+      const idx   = opportunityCIs.findIndex(x => x.opportunityId === oppId && x.ciId === cId);
+      if (idx !== -1) opportunityCIs.splice(idx, 1);
+      _renderCILinkedOpps(cId);
+      renderCITable();
+      renderOppTable();
     });
   });
-
-  document.getElementById('ci-modal').classList.add('open');
 }
+
+document.getElementById('opp-search-input').addEventListener('input', function() {
+  const q       = this.value.trim().toLowerCase();
+  const results = document.getElementById('opp-search-results');
+  if (!q) { results.classList.remove('open'); return; }
+
+  const already = new Set(opportunityCIs
+    .filter(x => x.ciId === _currentModalCiId)
+    .map(x => x.opportunityId));
+
+  const matches = opportunities.filter(o => o.name.toLowerCase().includes(q));
+
+  results.innerHTML = matches.length === 0
+    ? `<div class="ci-result-item" style="color:#aaa;cursor:default">No Opportunities found</div>`
+    : matches.map(o => {
+        const linked = already.has(o.id);
+        const cl = clusterById(o.clusterId);
+        return `<div class="ci-result-item${linked ? ' already-linked' : ''}" data-opp-id="${o.id}">
+          <span>${o.name} <span style="font-size:11px;color:#8aa0b4">— ${cl.name ? cl.name.split(' ')[0] : ''}</span></span>
+          ${linked ? '<span class="ci-result-badge">Already linked</span>' : '<span class="ci-result-badge">+ Link</span>'}
+        </div>`;
+      }).join('');
+
+  results.classList.add('open');
+
+  results.querySelectorAll('.ci-result-item:not(.already-linked)').forEach(item => {
+    item.addEventListener('click', () => {
+      opportunityCIs.push({ opportunityId: parseInt(item.dataset.oppId), ciId: _currentModalCiId });
+      results.classList.remove('open');
+      document.getElementById('opp-search-input').value = '';
+      _renderCILinkedOpps(_currentModalCiId);
+      renderCITable();
+      renderOppTable();
+    });
+  });
+});
+
+document.addEventListener('click', e => {
+  const input   = document.getElementById('opp-search-input');
+  const results = document.getElementById('opp-search-results');
+  if (!input.contains(e.target) && !results.contains(e.target))
+    results.classList.remove('open');
+});
 
 function closeCIModal() {
   document.getElementById('ci-modal').classList.remove('open');
