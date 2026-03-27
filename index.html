@@ -469,6 +469,188 @@
     }
     .opp-link:hover { text-decoration: underline; }
 
+    /* ── Dashboard summary cards ── */
+    .dash-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .dash-card {
+      background: #fff;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+      padding: 20px 22px;
+      border-top: 3px solid #1a6fb4;
+    }
+    .dash-card.warn  { border-top-color: #d4a017; }
+    .dash-card.alert { border-top-color: #c0392b; }
+    .dash-card.good  { border-top-color: #27ae60; }
+    .dash-card .dc-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8aa0b4;
+      margin-bottom: 8px;
+    }
+    .dash-card .dc-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a3a5c;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .dash-card .dc-sub {
+      font-size: 12px;
+      color: #8aa0b4;
+    }
+
+    /* ── Dashboard charts row ── */
+    .dash-charts {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .chart-panel {
+      background: #fff;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+      padding: 18px 20px;
+    }
+    .chart-panel h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a3a5c;
+      margin-bottom: 16px;
+    }
+
+    /* Horizontal bar chart */
+    .hbar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+      font-size: 12px;
+    }
+    .hbar-label {
+      width: 96px;
+      flex-shrink: 0;
+      color: #4a6a84;
+      text-align: right;
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hbar-label.wide { width: 160px; }
+    .hbar-track {
+      flex: 1;
+      height: 16px;
+      background: #eef2f6;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .hbar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+    .hbar-count {
+      width: 24px;
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: #2c3e50;
+      text-align: right;
+    }
+
+    /* Donut chart */
+    .donut-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .donut-legend { width: 100%; }
+    .donut-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: #4a6a84;
+    }
+    .donut-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .donut-legend-count { margin-left: auto; font-weight: 700; color: #2c3e50; }
+
+    /* ── Attention Required section ── */
+    .attention-section {
+      background: #fff;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .attention-header {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .attention-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .attention-col {
+      padding: 18px 20px;
+    }
+    .attention-col:first-child {
+      border-right: 1px solid #e0eaf4;
+    }
+    .attention-col h4 {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .attention-col h4 .attn-count {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+    .overdue-label { color: #922; }
+    .overdue-label .attn-count { background: #fde8e8; color: #922; }
+    .missing-label { color: #856404; }
+    .missing-label .attn-count { background: #fff3cd; color: #856404; }
+    .attention-item {
+      padding: 9px 0;
+      border-bottom: 1px solid #eef2f6;
+      font-size: 13px;
+    }
+    .attention-item:last-child { border-bottom: none; }
+    .attention-item .ai-name { font-weight: 600; color: #1a3a5c; margin-bottom: 2px; }
+    .attention-item .ai-meta { font-size: 11px; color: #8aa0b4; }
+    .attention-item .ai-date { color: #c0392b; font-weight: 600; }
+    .attention-all-good {
+      text-align: center;
+      padding: 32px;
+      color: #27ae60;
+      font-size: 13px;
+      font-weight: 600;
+      grid-column: 1 / -1;
+    }
+
     /* ── CI search / link (in Opp modal) ── */
     .ci-link-row { position: relative; margin-top: 4px; }
     .ci-search-input {
@@ -981,9 +1163,29 @@
       <h2>Leadership Dashboard</h2>
       <p>Portfolio health summary across all clusters.</p>
     </div>
-    <div class="placeholder-box">
-      <div class="icon">📊</div>
-      <h3>Leadership Dashboard — Coming in Phase 5</h3>
+    <!-- Summary cards -->
+    <div class="dash-cards" id="dash-cards"></div>
+
+    <!-- Charts -->
+    <div class="dash-charts">
+      <div class="chart-panel">
+        <h3>By Status</h3>
+        <div id="chart-status"></div>
+      </div>
+      <div class="chart-panel">
+        <h3>By Cluster</h3>
+        <div id="chart-cluster"></div>
+      </div>
+      <div class="chart-panel">
+        <h3>By Priority</h3>
+        <div id="chart-priority"></div>
+      </div>
+    </div>
+
+    <!-- Attention Required -->
+    <div class="attention-section">
+      <div class="attention-header">Attention Required</div>
+      <div class="attention-body" id="dash-attention"></div>
     </div>
   </section>
 
@@ -1905,6 +2107,175 @@ document.addEventListener('click', e => {
 });
 
 renderCITable();
+
+// ════════════════════════════════════════════════════════════
+//  VIEW 5 — LEADERSHIP DASHBOARD
+// ════════════════════════════════════════════════════════════
+
+function renderDashboard() {
+  const today = new Date(TODAY);
+
+  // ── Summary cards ────────────────────────────────────────
+  const total       = opportunities.length;
+  const active      = opportunities.filter(o => o.status === 'Active').length;
+  const noIR        = opportunities.filter(o => irCountForOpp(o.id) === 0).length;
+  const noProj      = opportunities.filter(o => projCountForOpp(o.id) === 0).length;
+
+  document.getElementById('dash-cards').innerHTML = `
+    <div class="dash-card good">
+      <div class="dc-label">Total Opportunities</div>
+      <div class="dc-value">${total}</div>
+      <div class="dc-sub">across all clusters</div>
+    </div>
+    <div class="dash-card good">
+      <div class="dc-label">Active</div>
+      <div class="dc-value">${active}</div>
+      <div class="dc-sub">currently in delivery</div>
+    </div>
+    <div class="dash-card warn">
+      <div class="dc-label">No Infra Request</div>
+      <div class="dc-value">${noIR}</div>
+      <div class="dc-sub">opportunities unlinked</div>
+    </div>
+    <div class="dash-card warn">
+      <div class="dc-label">No Project</div>
+      <div class="dc-value">${noProj}</div>
+      <div class="dc-sub">opportunities unlinked</div>
+    </div>
+  `;
+
+  // ── Helpers ───────────────────────────────────────────────
+  function hbar(label, count, max, fillColor, labelClass = '') {
+    const pct = max > 0 ? Math.round((count / max) * 100) : 0;
+    return `<div class="hbar-row">
+      <div class="hbar-label ${labelClass}" title="${label}">${label}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+      <div class="hbar-count">${count}</div>
+    </div>`;
+  }
+
+  // ── Status chart ──────────────────────────────────────────
+  const statusDefs = [
+    { label: 'Identified',   color: '#7a9ab4' },
+    { label: 'In Planning',  color: '#1a6fb4' },
+    { label: 'Active',       color: '#27ae60' },
+    { label: 'On Hold',      color: '#d4a017' },
+    { label: 'Completed',    color: '#95a5a6' },
+  ];
+  const statusMax = Math.max(...statusDefs.map(s => opportunities.filter(o => o.status === s.label).length));
+  document.getElementById('chart-status').innerHTML =
+    statusDefs.map(s => {
+      const count = opportunities.filter(o => o.status === s.label).length;
+      return hbar(s.label, count, statusMax, s.color);
+    }).join('');
+
+  // ── Cluster chart ─────────────────────────────────────────
+  const clusterMax = Math.max(...clusters.map(c => opportunities.filter(o => o.clusterId === c.id).length));
+  // Short cluster labels
+  const clusterShort = name => name.replace(' I&IT Cluster','').replace(' Cluster','').replace(' Integration Cluster','').trim();
+  document.getElementById('chart-cluster').innerHTML =
+    clusters.map(c => {
+      const count = opportunities.filter(o => o.clusterId === c.id).length;
+      return hbar(clusterShort(c.name), count, clusterMax, '#1a6fb4', 'wide');
+    }).join('');
+
+  // ── Priority donut ────────────────────────────────────────
+  const priDefs = [
+    { label: 'High',   color: '#c0392b' },
+    { label: 'Medium', color: '#d4a017' },
+    { label: 'Low',    color: '#27ae60' },
+  ];
+  const priCounts = priDefs.map(p => ({
+    ...p,
+    count: opportunities.filter(o => o.priority === p.label).length
+  }));
+  const priTotal = priCounts.reduce((s, p) => s + p.count, 0);
+
+  // SVG donut
+  const R = 52, CX = 68, CY = 68, strokeW = 22;
+  const circ = 2 * Math.PI * R;
+  let offset = 0;
+  const slices = priCounts.map(p => {
+    const dash = priTotal > 0 ? (p.count / priTotal) * circ : 0;
+    const slice = `<circle cx="${CX}" cy="${CY}" r="${R}"
+      fill="none" stroke="${p.color}" stroke-width="${strokeW}"
+      stroke-dasharray="${dash} ${circ - dash}"
+      stroke-dashoffset="${-offset}"
+      transform="rotate(-90 ${CX} ${CY})"/>`;
+    offset += dash;
+    return slice;
+  }).join('');
+
+  const legend = priCounts.map(p => `
+    <div class="donut-legend-row">
+      <div class="donut-swatch" style="background:${p.color}"></div>
+      <span>${p.label}</span>
+      <span class="donut-legend-count">${p.count}</span>
+    </div>`).join('');
+
+  document.getElementById('chart-priority').innerHTML = `
+    <div class="donut-wrap">
+      <svg width="136" height="136" viewBox="0 0 136 136">
+        <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="#eef2f6" stroke-width="${strokeW}"/>
+        ${slices}
+        <text x="${CX}" y="${CY}" text-anchor="middle" dominant-baseline="central"
+          style="font-size:20px;font-weight:700;fill:#1a3a5c">${priTotal}</text>
+      </svg>
+      <div class="donut-legend">${legend}</div>
+    </div>`;
+
+  // ── Attention Required ────────────────────────────────────
+  const overdue = opportunities.filter(o =>
+    o.plannedStartDate &&
+    new Date(o.plannedStartDate) < today &&
+    (o.status === 'Identified' || o.status === 'In Planning')
+  );
+  const missing = opportunities.filter(o => !o.plannedStartDate);
+
+  const attentionEl = document.getElementById('dash-attention');
+
+  if (overdue.length === 0 && missing.length === 0) {
+    attentionEl.innerHTML = `<div class="attention-all-good">
+      &#10003; No Opportunities require attention at this time.
+    </div>`;
+    return;
+  }
+
+  function attentionItem(o, showDate) {
+    const cl = clusterById(o.clusterId);
+    return `<div class="attention-item">
+      <div class="ai-name">${o.name}</div>
+      <div class="ai-meta">
+        ${cl.name || ''}
+        &nbsp;·&nbsp; <span class="${statusBadgeClass(o.status)}">${o.status}</span>
+        ${showDate ? `&nbsp;·&nbsp; Planned start: <span class="ai-date">${fmtDate(o.plannedStartDate)}</span>` : ''}
+      </div>
+    </div>`;
+  }
+
+  attentionEl.innerHTML = `
+    <div class="attention-col">
+      <h4 class="overdue-label">
+        Overdue to Start
+        <span class="attn-count">${overdue.length}</span>
+      </h4>
+      ${overdue.length
+        ? overdue.map(o => attentionItem(o, true)).join('')
+        : '<div style="font-size:13px;color:#8aa0b4;font-style:italic">None</div>'}
+    </div>
+    <div class="attention-col">
+      <h4 class="missing-label">
+        Missing Start Date
+        <span class="attn-count">${missing.length}</span>
+      </h4>
+      ${missing.length
+        ? missing.map(o => attentionItem(o, false)).join('')
+        : '<div style="font-size:13px;color:#8aa0b4;font-style:italic">None</div>'}
+    </div>
+  `;
+}
+
+renderDashboard();
 </script>
 </body>
 </html>
