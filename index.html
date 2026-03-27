@@ -1584,52 +1584,7 @@ document.getElementById('opp-clear-filters').addEventListener('click', () => {
 
 // ── Opportunity Detail Modal ──────────────────────────────
 
-function openOppModal(oppId) {
-  const o  = opportunities.find(x => x.id === oppId);
-  if (!o) return;
-  const cl = clusterById(o.clusterId);
-
-  document.getElementById('modal-opp-name').textContent = o.name;
-  document.getElementById('modal-opp-desc').textContent = o.description;
-
-  document.getElementById('modal-opp-meta').innerHTML = `
-    <div class="modal-field"><label>Cluster</label><span>${cl.name || '—'}</span></div>
-    <div class="modal-field"><label>Ministry</label><span>${cl.ministry || '—'}</span></div>
-    <div class="modal-field"><label>Priority</label><span><span class="${priorityBadgeClass(o.priority)}">${o.priority}</span></span></div>
-    <div class="modal-field"><label>Status</label><span><span class="${statusBadgeClass(o.status)}">${o.status}</span></span></div>
-    <div class="modal-field"><label>Planned Start</label><span>${o.plannedStartDate ? fmtDate(o.plannedStartDate) : '<em style="color:#aaa">Not set</em>'}</span></div>
-    <div class="modal-field"><label>Last Updated</label><span>${fmtDate(o.lastUpdated)}</span></div>
-  `;
-
-  const irLinks = infrastructureRequests.filter(r => r.opportunityId === oppId);
-  document.getElementById('modal-opp-ir').innerHTML = irLinks.length
-    ? irLinks.map(r => `<span class="modal-link-chip" data-nav-ir-modal="${oppId}">${r.externalRequestId} — ${r.name}</span>`).join('')
-    : '<span class="modal-none">No linked infrastructure requests</span>';
-
-  const projLinks = projects.filter(p => p.opportunityId === oppId);
-  document.getElementById('modal-opp-proj').innerHTML = projLinks.length
-    ? projLinks.map(p => `<span class="modal-link-chip" data-nav-proj-modal="${oppId}">${p.externalProjectId} — ${p.name}</span>`).join('')
-    : '<span class="modal-none">No linked projects</span>';
-
-  const ciLinks = opportunityCIs.filter(x => x.opportunityId === oppId)
-    .map(x => configurationItems.find(ci => ci.id === x.ciId)).filter(Boolean);
-  document.getElementById('modal-opp-ci').innerHTML = ciLinks.length
-    ? ciLinks.map(ci => `<span class="modal-link-chip" data-nav-ci-modal="${oppId}">${ci.ciName}</span>`).join('')
-    : '<span class="modal-none">No linked CIs</span>';
-
-  // Modal chip clicks → navigate
-  document.querySelectorAll('[data-nav-ir-modal]').forEach(el => {
-    el.addEventListener('click', () => { closeOppModal(); navigateTo('view-infra', { opportunityId: oppId }); });
-  });
-  document.querySelectorAll('[data-nav-proj-modal]').forEach(el => {
-    el.addEventListener('click', () => { closeOppModal(); navigateTo('view-projects', { opportunityId: oppId }); });
-  });
-  document.querySelectorAll('[data-nav-ci-modal]').forEach(el => {
-    el.addEventListener('click', () => { closeOppModal(); navigateTo('view-solutions', { opportunityId: oppId }); });
-  });
-
-  document.getElementById('opp-modal').classList.add('open');
-}
+// openOppModal — defined in the Solutions section below
 
 function closeOppModal() {
   document.getElementById('opp-modal').classList.remove('open');
@@ -2223,8 +2178,7 @@ function _patchCIChips(oppId) {
   });
 }
 
-// Replace openOppModal with full version including CI linking
-openOppModal = function(oppId) {
+function openOppModal(oppId) {
   _currentModalOppId = oppId;
   const o  = opportunities.find(x => x.id === oppId);
   if (!o) return;
@@ -2263,7 +2217,7 @@ openOppModal = function(oppId) {
   document.getElementById('ci-search-input').value = '';
   document.getElementById('ci-search-results').classList.remove('open');
   document.getElementById('opp-modal').classList.add('open');
-};
+}
 
 document.getElementById('ci-search-input').addEventListener('input', function() {
   const q       = this.value.trim().toLowerCase();
