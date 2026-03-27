@@ -651,6 +651,42 @@
       grid-column: 1 / -1;
     }
 
+    /* ── Cross-view filter banner ── */
+    .nav-filter-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff8e1;
+      border: 1px solid #f0c040;
+      border-left: 4px solid #d4a017;
+      border-radius: 4px;
+      padding: 9px 14px;
+      font-size: 12px;
+      color: #7a4f00;
+      margin-bottom: 14px;
+    }
+    .nav-filter-banner strong { font-weight: 700; }
+    .nav-filter-clear {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 600;
+      color: #1a6fb4;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+    .nav-filter-clear:hover { background: #fdf0c0; }
+
+    /* ── Row highlight (cross-nav) ── */
+    @keyframes rowPulse {
+      0%   { background: #fffbcc; }
+      60%  { background: #fffbcc; }
+      100% { background: transparent; }
+    }
+    .row-highlight { animation: rowPulse 2.4s ease forwards; }
+
     /* ── CI search / link (in Opp modal) ── */
     .ci-link-row { position: relative; margin-top: 4px; }
     .ci-search-input {
@@ -742,6 +778,9 @@
       <h2>Opportunity Registry</h2>
       <p>All annual planning Opportunities across Ontario I&amp;IT clusters.</p>
     </div>
+
+    <!-- Cross-view CI filter banner -->
+    <div id="opp-ci-filter-banner"></div>
 
     <!-- Filters -->
     <div class="filter-bar">
@@ -835,6 +874,7 @@
     <div class="info-banner">
       Request data is manually referenced from the Ontario intake tool. Future state: automated sync.
     </div>
+    <div id="ir-opp-filter-banner"></div>
     <div class="view-toolbar">
       <div class="filter-bar" style="margin-bottom:0">
         <div class="filter-group">
@@ -969,6 +1009,7 @@
     <div class="info-banner">
       Project data is manually referenced from Planview. Future state: automated sync via Planview API.
     </div>
+    <div id="proj-opp-filter-banner"></div>
     <div class="view-toolbar">
       <div class="filter-bar" style="margin-bottom:0">
         <div class="filter-group">
@@ -1292,24 +1333,63 @@ const opportunityCIs = [
 //  NAVIGATION
 // ════════════════════════════════════════════════════════════
 
+// Cross-view filter state
+let _oppCiFilter      = null;  // ciId — filter Opportunities to those linked to this CI
+let _irOppFilter      = null;  // opportunityId — filter IR to this Opportunity
+let _projOppFilter    = null;  // opportunityId — filter Projects to this Opportunity
+
 function navigateTo(viewId, params = {}) {
-  // Deactivate all tabs and views
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
-  // Activate the target view
   const targetView = document.getElementById(viewId);
   const targetTab  = document.querySelector(`.nav-tab[data-view="${viewId}"]`);
   if (targetView) targetView.classList.add('active');
   if (targetTab)  targetTab.classList.add('active');
 
-  // Store params for the view to consume (used for cross-view filtering)
-  window._navParams = params;
+  // Handle cross-view params
+  if (viewId === 'view-opportunities') {
+    if (params.filterByCiId) {
+      _oppCiFilter = params.filterByCiId;
+      renderOppTable();
+    } else if (params.highlightOppId) {
+      _oppCiFilter = null;
+      // Clear dropdown filters so the row is visible
+      document.getElementById('opp-filter-cluster').value  = '';
+      document.getElementById('opp-filter-status').value   = '';
+      document.getElementById('opp-filter-priority').value = '';
+      renderOppTable();
+      requestAnimationFrame(() => {
+        const row = document.querySelector(`#opp-tbody tr[data-opp-id="${params.highlightOppId}"]`);
+        if (row) {
+          row.classList.add('row-highlight');
+          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          row.addEventListener('animationend', () => row.classList.remove('row-highlight'), { once: true });
+        }
+      });
+    } else {
+      _oppCiFilter = null;
+      renderOppTable();
+    }
+  } else if (viewId === 'view-infra') {
+    _irOppFilter = params.opportunityId || null;
+    renderIRTable();
+  } else if (viewId === 'view-projects') {
+    _projOppFilter = params.opportunityId || null;
+    renderProjTable();
+  } else if (viewId === 'view-dashboard') {
+    renderDashboard();
+  }
 }
 
-// Wire up nav tabs
+// Wire up nav tabs (clears cross-view filters on manual tab click)
 document.querySelectorAll('.nav-tab').forEach(tab => {
-  tab.addEventListener('click', () => navigateTo(tab.dataset.view));
+  tab.addEventListener('click', () => {
+    _oppCiFilter = null;
+    _irOppFilter = null;
+    _projOppFilter = null;
+    navigateTo(tab.dataset.view);
+  });
 });
 
 // ════════════════════════════════════════════════════════════
@@ -1364,11 +1444,31 @@ function getOppFilters() {
 }
 
 function renderOppTable() {
+  // Cross-view CI filter banner
+  const bannerContainer = document.getElementById('opp-ci-filter-banner');
+  if (_oppCiFilter) {
+    const ci = configurationItems.find(x => x.id === _oppCiFilter);
+    bannerContainer.innerHTML = `<div class="nav-filter-banner">
+      Filtered by Solution / CI: <strong>${ci ? ci.ciName : _oppCiFilter}</strong>
+      <button class="nav-filter-clear" id="opp-clear-ci-filter">Clear filter</button>
+    </div>`;
+    document.getElementById('opp-clear-ci-filter').addEventListener('click', () => {
+      _oppCiFilter = null;
+      renderOppTable();
+    });
+  } else {
+    bannerContainer.innerHTML = '';
+  }
+
   const { cluster, status, priority } = getOppFilters();
   let filtered = opportunities.filter(o => {
     if (cluster  && o.clusterId !== parseInt(cluster)) return false;
     if (status   && o.status !== status)               return false;
     if (priority && o.priority !== priority)           return false;
+    if (_oppCiFilter) {
+      const linked = opportunityCIs.some(x => x.opportunityId === o.id && x.ciId === _oppCiFilter);
+      if (!linked) return false;
+    }
     return true;
   });
 
@@ -1435,10 +1535,12 @@ function renderOppTable() {
       // Update last updated cell (3 cols to the right: td index 6)
       const cells = e.target.closest('tr').querySelectorAll('td');
       cells[6].innerHTML = fmtDate(TODAY);
+      // Keep dashboard live
+      if (document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
     });
   });
 
-  // Linked count chips → cross-view navigation (wired in Phase 6; stub click suppression here)
+  // Linked count chips → cross-view navigation
   tbody.querySelectorAll('[data-nav-ir]').forEach(el => {
     el.addEventListener('click', e => {
       e.stopPropagation();
@@ -1555,12 +1657,29 @@ function irStatusBadgeClass(s) {
 }
 
 function renderIRTable() {
+  // Cross-view opportunity filter banner
+  const bannerEl = document.getElementById('ir-opp-filter-banner');
+  if (_irOppFilter) {
+    const opp = opportunities.find(o => o.id === _irOppFilter);
+    bannerEl.innerHTML = `<div class="nav-filter-banner">
+      Filtered by Opportunity: <strong>${opp ? opp.name : _irOppFilter}</strong>
+      <button class="nav-filter-clear" id="ir-clear-opp-filter">Clear filter</button>
+    </div>`;
+    document.getElementById('ir-clear-opp-filter').addEventListener('click', () => {
+      _irOppFilter = null;
+      renderIRTable();
+    });
+  } else {
+    bannerEl.innerHTML = '';
+  }
+
   const typeFilter   = document.getElementById('ir-filter-type').value;
   const statusFilter = document.getElementById('ir-filter-status').value;
 
   let filtered = infrastructureRequests.filter(r => {
-    if (typeFilter   && r.type   !== typeFilter)   return false;
-    if (statusFilter && r.status !== statusFilter) return false;
+    if (typeFilter    && r.type   !== typeFilter)         return false;
+    if (statusFilter  && r.status !== statusFilter)       return false;
+    if (_irOppFilter  && r.opportunityId !== _irOppFilter) return false;
     return true;
   });
 
@@ -1720,10 +1839,27 @@ function projStatusBadgeClass(s) {
 }
 
 function renderProjTable() {
+  // Cross-view opportunity filter banner
+  const bannerEl = document.getElementById('proj-opp-filter-banner');
+  if (_projOppFilter) {
+    const opp = opportunities.find(o => o.id === _projOppFilter);
+    bannerEl.innerHTML = `<div class="nav-filter-banner">
+      Filtered by Opportunity: <strong>${opp ? opp.name : _projOppFilter}</strong>
+      <button class="nav-filter-clear" id="proj-clear-opp-filter">Clear filter</button>
+    </div>`;
+    document.getElementById('proj-clear-opp-filter').addEventListener('click', () => {
+      _projOppFilter = null;
+      renderProjTable();
+    });
+  } else {
+    bannerEl.innerHTML = '';
+  }
+
   const statusFilter = document.getElementById('proj-filter-status').value;
 
   let filtered = projects.filter(p => {
-    if (statusFilter && p.status !== statusFilter) return false;
+    if (statusFilter   && p.status !== statusFilter)           return false;
+    if (_projOppFilter && p.opportunityId !== _projOppFilter)  return false;
     return true;
   });
 
